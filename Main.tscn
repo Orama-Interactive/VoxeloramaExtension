@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://VoxelArtGen.gd" type="Script" id=10]
+
+[node name="Main" type="Spatial"]
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2.47662, 3.90819, 8.02567 )
+far = 373.6
+
+[node name="VoxelArtGen" type="MeshInstance" parent="."]
+script = ExtResource( 10 )
