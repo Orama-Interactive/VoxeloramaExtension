@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://VoxelArtGen.gd" type="Script" id=1]
+
+[sub_resource type="ProceduralSky" id=2]
+
+[sub_resource type="Environment" id=1]
+background_mode = 2
+background_sky = SubResource( 2 )
+
+[node name="VoxeloramaPreview" type="Spatial"]
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2.47662, 3.90819, 8.02567 )
+environment = SubResource( 1 )
+current = true
+far = 373.6
+
+[node name="VoxelArtGen" type="MeshInstance" parent="."]
+script = ExtResource( 1 )

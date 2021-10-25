@@ -1,0 +1,35 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Voxelorama.gd" type="Script" id=1]
+[ext_resource path="res://VoxeloramaPreview.tscn" type="PackedScene" id=2]
+
+[node name="Voxelorama" type="ConfirmationDialog"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -478.0
+margin_bottom = -107.0
+resizable = true
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ViewportContainer" type="ViewportContainer" parent="."]
+margin_left = 8.0
+margin_top = 8.0
+margin_right = 544.0
+margin_bottom = 457.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Viewport" type="Viewport" parent="ViewportContainer"]
+size = Vector2( 536, 344 )
+handle_input_locally = false
+render_target_update_mode = 0
+
+[node name="VoxeloramaPreview" parent="ViewportContainer/Viewport" instance=ExtResource( 2 )]
+
+[connection signal="about_to_show" from="." to="." method="_on_Voxelorama_about_to_show"]
+[connection signal="confirmed" from="." to="." method="_on_VoxeloramaDialog_confirmed"]
+[connection signal="popup_hide" from="." to="." method="_on_Voxelorama_popup_hide"]

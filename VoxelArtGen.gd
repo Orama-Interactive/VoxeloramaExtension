@@ -2,8 +2,7 @@ extends MeshInstance
 
 
 var cubes := [] # Array of Cube(s)
-#var image_textures := [preload("res://layers/1.png"), preload("res://layers/2.png"), preload("res://layers/3.png")]
-var image_textures := [preload("res://icon.png")]
+var layer_images := [] # Array of Images
 
 onready var camera: Camera = $"../Camera"
 
@@ -106,17 +105,11 @@ class Cube extends Reference:
 #		surface_tool.add_uv(_uvs[0]); surface_tool.add_normal(normal); surface_tool.add_vertex(verts[0])
 
 
-func _ready() -> void:
-	generate_mesh()
-	export_obj()
-
-
 func generate_mesh() -> void:
 	var start: = OS.get_ticks_msec()
 	var array_mesh := ArrayMesh.new()
 	var i := 0
-	for image_tex in image_textures:
-		var image: Image = image_tex.get_data()
+	for image in layer_images:
 		image.flip_y()
 		camera.translation.y = image.get_size().y / 2
 		camera.translation.x = image.get_size().x / 2
@@ -182,10 +175,11 @@ func generate_mesh() -> void:
 # https://github.com/lawnjelly/GodotTweaks/blob/master/ObjExport/ObjExport.gd#L33
 # and
 # https://github.com/mohammedzero43/CSGExport-Godot/blob/master/addons/CSGExport/csgexport.gd#L48
-func export_obj() -> void:
+func export_obj(path := "user://test") -> void:
+	if !layer_images:
+		return
 	var start: = OS.get_ticks_msec()
-#	var path:String = "user://%s" % image_textures[0].resource_path.get_basename().get_file()
-	var path:String = "user://spider"
+#	path = "user://%s" % image_textures[0].resource_path.get_basename().get_file()
 	var file_name: String = path.get_file()
 	var objcont = "" #.obj content
 	var matcont = "" #.mat content
