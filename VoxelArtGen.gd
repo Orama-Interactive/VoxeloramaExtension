@@ -3,6 +3,7 @@ extends MeshInstance
 
 var cubes := [] # Array of Cube(s)
 var layer_images := [] # Array of Images
+var transparent_material := false
 
 onready var camera: Camera = $"../Camera"
 
@@ -28,11 +29,8 @@ class Cube extends Reference:
 
 
 	func generate_faces() -> void:
-		end_point += Vector2.RIGHT
 		faces.append([Vector3(start_point.x, start_point.y, z_front), Vector3(end_point.x, start_point.y, z_front), Vector3(end_point.x, end_point.y, z_front), Vector3(start_point.x, end_point.y, z_front), Vector3.FORWARD])
 		faces.append([Vector3(start_point.x, start_point.y, z_back), Vector3(end_point.x, start_point.y, z_back), Vector3(end_point.x, end_point.y, z_back), Vector3(start_point.x, end_point.y, z_back), Vector3.BACK])
-#		faces.append([Vector3(end_point.x, end_point.y, z_front), Vector3(start_point.x, end_point.y, z_front), Vector3(start_point.x, start_point.y, z_front), Vector3(end_point.x, start_point.y, z_front), Vector3.FORWARD])
-#		faces.append([Vector3(end_point.x, end_point.y, z_back), Vector3(start_point.x, end_point.y, z_back), Vector3(start_point.x, start_point.y, z_back), Vector3(end_point.x, start_point.y, z_back), Vector3.BACK])
 
 		faces.append([Vector3(start_point.x, end_point.y, z_back), Vector3(start_point.x, end_point.y, z_front), Vector3(end_point.x, end_point.y, z_front), Vector3(end_point.x, end_point.y, z_back), Vector3.UP])
 		faces.append([Vector3(start_point.x, start_point.y, z_back), Vector3(start_point.x, start_point.y, z_front), Vector3(end_point.x, start_point.y, z_front), Vector3(end_point.x, start_point.y, z_back), Vector3.DOWN])
@@ -95,52 +93,34 @@ class Cube extends Reference:
 			surface_tool.add_uv(_uvs[3]); surface_tool.add_vertex(verts[3])
 			surface_tool.add_uv(_uvs[2]); surface_tool.add_vertex(verts[2])
 
-#		var normal:= Vector3.RIGHT
-#		surface_tool.add_uv(_uvs[0]); surface_tool.add_normal(normal); surface_tool.add_vertex(verts[0])
-#		surface_tool.add_uv(_uvs[1]); surface_tool.add_normal(normal); surface_tool.add_vertex(verts[1])
-#		surface_tool.add_uv(_uvs[2]); surface_tool.add_normal(normal); surface_tool.add_vertex(verts[2])
-#
-#		surface_tool.add_uv(_uvs[2]); surface_tool.add_normal(normal); surface_tool.add_vertex(verts[2])
-#		surface_tool.add_uv(_uvs[3]); surface_tool.add_normal(normal); surface_tool.add_vertex(verts[3])
-#		surface_tool.add_uv(_uvs[0]); surface_tool.add_normal(normal); surface_tool.add_vertex(verts[0])
+
+#func _ready() -> void:
+#	layer_images.append(preload("icon.png").get_data())
 
 
 func generate_mesh() -> void:
 	var start: = OS.get_ticks_msec()
+
+	if layer_images[0]:
+		camera.translation.y = layer_images[0].get_size().y / 2
+		camera.translation.x = layer_images[0].get_size().x / 2
+		camera.translation.z = max(layer_images[0].get_size().x, layer_images[0].get_size().y)
+
 	var array_mesh := ArrayMesh.new()
 	var i := 0
-	for image in layer_images:
+	for imag in layer_images:
+		var image := Image.new()
+		image.copy_from(imag)
 		image.flip_y()
-		camera.translation.y = image.get_size().y / 2
-		camera.translation.x = image.get_size().x / 2
-		camera.translation.z = max(image.get_size().x, image.get_size().y)
+		var bitmap := BitMap.new()
+		bitmap.create_from_image_alpha(image)
 
-		var current_cube := Cube.new(i)
-		current_cube.start_point = Vector2(0, 0)
-		current_cube.end_point = Vector2(0, 0)
-
-		image.lock()
-		for x in image.get_size().x:
-			if current_cube.start_point == current_cube.end_point:
-				current_cube = Cube.new(i)
-				current_cube.start_point = Vector2(x, 0)
-				current_cube.end_point = Vector2(x, 0)
-
-			for y in image.get_size().y:
-				var color: Color = image.get_pixel(x, y)
-				if color.a <= 0.1:
-					if current_cube.start_point != current_cube.end_point:
-						cubes.append(current_cube)
-
-					current_cube = Cube.new(i)
-					current_cube.start_point = Vector2(x, y+1)
-					current_cube.end_point = Vector2(x, y+1)
-				else:
-					current_cube.end_point = Vector2(x, y+1)
-
-		image.unlock()
-		if current_cube.start_point != current_cube.end_point and !cubes.has(current_cube):
-			cubes.append(current_cube)
+		var rectangles := find_rectangles_in_bitmap(bitmap)
+		for rect in rectangles:
+			var cube := Cube.new(i)
+			cube.start_point = rect.position
+			cube.end_point = rect.end
+			cubes.append(cube)
 
 		for cube in cubes:
 			cube.generate_faces()
@@ -157,6 +137,7 @@ func generate_mesh() -> void:
 		var image_texture := ImageTexture.new()
 		image_texture.create_from_image(image, 0)
 		var mat := SpatialMaterial.new()
+		mat.flags_transparent = transparent_material
 		mat.albedo_texture = image_texture
 		array_mesh.surface_set_material(i, mat)
 		array_mesh.surface_set_name(i, "Layer %s" % i)
@@ -167,8 +148,49 @@ func generate_mesh() -> void:
 	# Commit to a mesh.
 	mesh = array_mesh
 	var end: = OS.get_ticks_msec()
-	print("Cubes: ", cubes.size())
 	print("Mesh generated in ", end - start, " ms")
+
+
+# Code inspired by user jo_va from https://stackoverflow.com/a/54762668
+func find_rectangles_in_bitmap(bitmap : BitMap) -> Array:
+	var width := bitmap.get_size().x
+	var height := bitmap.get_size().y
+
+	var rectangles := []
+	while bitmap.get_true_bit_count() > 0:
+		var rect := [0, 0, width - 1, height - 1]
+
+		# Find top left corner
+		var found_corner := false
+		for i in width:
+			for j in height:
+				if bitmap.get_bit(Vector2(i, j)):
+					rect[0] = i
+					rect[1] = j
+					found_corner = true
+					break
+			if found_corner: break
+
+		# Find bottom right corner
+		for i in range(rect[0], rect[2] + 1):
+			if !bitmap.get_bit(Vector2(i, rect[1])):
+				rect[2] = i - 1
+				break
+
+			for j in range(rect[1], rect[3] + 1):
+				if !bitmap.get_bit(Vector2(i, j)):
+					rect[3] = j - 1
+					break
+
+		# Mark rectangle so it will not be counted again
+		var type_rect := Rect2()
+		type_rect.position = Vector2(rect[0], rect[1])
+		type_rect.end = Vector2(rect[2] + 1, rect[3] + 1)
+		bitmap.set_bit_rect(type_rect, false)
+
+		rectangles.append(type_rect)
+
+	return rectangles
 
 
 # Thanks to
@@ -185,7 +207,7 @@ func export_obj(path := "user://test") -> void:
 	var matcont = "" #.mat content
 	var vertices_total := 0
 
-	objcont += "# Voxelorama\n"
+	objcont += "# Exported from Pixelorama with the Voxelorama plugin\n"
 #	objcont += "# Number of vertices " + str(nVerts) + "\n"
 #	objcont += "# Number of faces " + str(nFaces) + "\n"
 

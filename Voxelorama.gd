@@ -3,7 +3,7 @@ extends ConfirmationDialog
 
 var plugin_type: = "ImageEffect"
 
-onready var voxel_art_gen: MeshInstance = $ViewportContainer/Viewport/VoxeloramaPreview/VoxelArtGen
+onready var voxel_art_gen: MeshInstance = find_node("VoxelArtGen")
 
 
 #func _ready() -> void:
@@ -11,9 +11,12 @@ onready var voxel_art_gen: MeshInstance = $ViewportContainer/Viewport/Voxelorama
 
 
 func _on_Voxelorama_about_to_show() -> void:
+	generate()
+
+
+func generate() -> void:
 	var global = get_node("/root/Global")
 	if global:
-		print("yes")
 		voxel_art_gen.layer_images.clear()
 		var project = global.current_project
 		var i := 0
@@ -34,3 +37,8 @@ func _on_Voxelorama_popup_hide() -> void:
 	var global = get_node("/root/Global")
 	if global:
 		global.dialog_open(false)
+
+
+func _on_TransparentMaterials_toggled(button_pressed: bool) -> void:
+	voxel_art_gen.transparent_material = button_pressed
+	generate()

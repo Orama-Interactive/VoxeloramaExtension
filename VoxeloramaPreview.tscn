@@ -2,17 +2,17 @@
 
 [ext_resource path="res://VoxelArtGen.gd" type="Script" id=1]
 
-[sub_resource type="ProceduralSky" id=2]
+[sub_resource type="ProceduralSky" id=1]
 
-[sub_resource type="Environment" id=1]
+[sub_resource type="Environment" id=2]
 background_mode = 2
-background_sky = SubResource( 2 )
+background_sky = SubResource( 1 )
 
 [node name="VoxeloramaPreview" type="Spatial"]
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2.47662, 3.90819, 8.02567 )
-environment = SubResource( 1 )
+environment = SubResource( 2 )
 current = true
 far = 373.6
 
