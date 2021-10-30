@@ -28,6 +28,8 @@ __meta__ = {
 [node name="ViewportContainer" type="ViewportContainer" parent="VBoxContainer"]
 margin_right = 536.0
 margin_bottom = 344.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -51,4 +53,7 @@ text = "Transparent Materials"
 [connection signal="about_to_show" from="." to="." method="_on_Voxelorama_about_to_show"]
 [connection signal="confirmed" from="." to="." method="_on_VoxeloramaDialog_confirmed"]
 [connection signal="popup_hide" from="." to="." method="_on_Voxelorama_popup_hide"]
+[connection signal="mouse_entered" from="VBoxContainer/ViewportContainer" to="." method="_on_ViewportContainer_mouse_entered"]
+[connection signal="mouse_exited" from="VBoxContainer/ViewportContainer" to="." method="_on_ViewportContainer_mouse_exited"]
+[connection signal="resized" from="VBoxContainer/ViewportContainer" to="." method="_on_ViewportContainer_resized"]
 [connection signal="toggled" from="VBoxContainer/TransparentMaterials" to="." method="_on_TransparentMaterials_toggled"]

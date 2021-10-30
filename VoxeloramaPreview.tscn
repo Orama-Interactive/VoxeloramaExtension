@@ -16,5 +16,7 @@ environment = SubResource( 2 )
 current = true
 far = 373.6
 
-[node name="VoxelArtGen" type="MeshInstance" parent="."]
+[node name="MeshParent" type="Spatial" parent="."]
+
+[node name="VoxelArtGen" type="MeshInstance" parent="MeshParent"]
 script = ExtResource( 1 )

@@ -5,7 +5,7 @@ var cubes := [] # Array of Cube(s)
 var layer_images := [] # Array of Images
 var transparent_material := false
 
-onready var camera: Camera = $"../Camera"
+onready var camera: Camera = $"../../Camera"
 
 
 class Cube extends Reference:
@@ -40,10 +40,15 @@ class Cube extends Reference:
 
 
 	func generate_uvs(image_size:Vector2) -> void:
-		var start_x := start_point.x / image_size.x
-		var start_y := start_point.y / image_size.y
-		var end_x := end_point.x / image_size.x
-		var end_y := end_point.y / image_size.y
+		var start_x := start_point.x / image_size.x + 0.5 # We add 0.5 because the vertices are offset to the center of the mesh
+		var start_y := start_point.y / image_size.y + 0.5
+		var end_x := end_point.x / image_size.x + 0.5
+		var end_y := end_point.y / image_size.y + 0.5
+#
+#		var start_x := (start_point.x  + (image_size.x / 2)) / image_size.x
+#		var start_y := (start_point.y + (image_size.y / 2)) / image_size.y
+#		var end_x := (end_point.x + (image_size.x / 2)) / image_size.x
+#		var end_y := (end_point.y + (image_size.y / 2)) / image_size.y
 
 		uvs[0] = Vector2(start_x, start_y)
 		uvs[1] = Vector2(end_x, start_y)
@@ -102,8 +107,8 @@ func generate_mesh() -> void:
 	var start: = OS.get_ticks_msec()
 
 	if layer_images[0]:
-		camera.translation.y = layer_images[0].get_size().y / 2
-		camera.translation.x = layer_images[0].get_size().x / 2
+		camera.translation.y = layer_images[0].get_size().y / 8
+		camera.translation.x = layer_images[0].get_size().x / 8
 		camera.translation.z = max(layer_images[0].get_size().x, layer_images[0].get_size().y)
 
 	var array_mesh := ArrayMesh.new()
@@ -118,8 +123,8 @@ func generate_mesh() -> void:
 		var rectangles := find_rectangles_in_bitmap(bitmap)
 		for rect in rectangles:
 			var cube := Cube.new(i)
-			cube.start_point = rect.position
-			cube.end_point = rect.end
+			cube.start_point = rect.position - (image.get_size() / 2)
+			cube.end_point = rect.end - (image.get_size() / 2)
 			cubes.append(cube)
 
 		for cube in cubes:
@@ -208,8 +213,8 @@ func export_obj(path := "user://test") -> void:
 	var vertices_total := 0
 
 	objcont += "# Exported from Pixelorama with the Voxelorama plugin\n"
-#	objcont += "# Number of vertices " + str(nVerts) + "\n"
-#	objcont += "# Number of faces " + str(nFaces) + "\n"
+# warning-ignore:integer_division
+	objcont += "# Number of triangles: " + str(mesh.get_faces().size() / 3) + "\n"
 
 	objcont += "mtllib "+ file_name + ".mtl\n"
 	objcont += "o " + file_name  + "\n"
