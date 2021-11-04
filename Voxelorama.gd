@@ -78,10 +78,6 @@ func _on_TransparentMaterials_toggled(button_pressed: bool) -> void:
 	generate()
 
 
-func _on_ViewportContainer_resized() -> void:
-	$VBoxContainer/ViewportContainer/Viewport.size = $VBoxContainer/ViewportContainer.rect_size
-
-
 func _on_ViewportContainer_mouse_entered() -> void:
 	viewport_has_focus = true
 
