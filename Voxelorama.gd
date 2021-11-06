@@ -8,9 +8,15 @@ var pan := false
 
 onready var voxel_art_gen: MeshInstance = find_node("VoxelArtGen")
 onready var camera: Camera = find_node("Camera")
+onready var global = get_node("/root/Global") # Only when used as a Pixelorama plugin
 
 
-#func _ready() -> void:
+func _ready() -> void:
+	if global:
+		var image_menu : PopupMenu = global.top_menu_container.image_menu_button.get_popup()
+		var idx = image_menu.get_item_count() - 1
+		image_menu.add_item("Voxelorama", idx)
+		image_menu.set_item_metadata(idx, self)
 #	popup_centered()
 
 
@@ -49,7 +55,6 @@ func _on_Voxelorama_about_to_show() -> void:
 
 
 func generate() -> void:
-	var global = get_node("/root/Global")
 	if global:
 		voxel_art_gen.layer_images.clear()
 		var project = global.current_project
@@ -68,7 +73,6 @@ func _on_VoxeloramaDialog_confirmed() -> void:
 
 
 func _on_Voxelorama_popup_hide() -> void:
-	var global = get_node("/root/Global")
 	if global:
 		global.dialog_open(false)
 
