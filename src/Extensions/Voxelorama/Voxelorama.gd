@@ -1,13 +1,14 @@
-extends ConfirmationDialog
+extends AcceptDialog
 
 var viewport_has_focus := false
 var rotate := false
 var pan := false
 var menu_item_id: int
-var global # Only when used as a Pixelorama plugin
+var global  # Only when used as a Pixelorama plugin
 
 onready var voxel_art_gen: MeshInstance = find_node("VoxelArtGen")
 onready var camera: Camera = find_node("Camera")
+onready var file_dialog: FileDialog = find_node("FileDialog")
 
 
 func _enter_tree() -> void:
@@ -80,10 +81,6 @@ func _on_Voxelorama_about_to_show() -> void:
 	generate()
 
 
-func _on_VoxeloramaDialog_confirmed() -> void:
-	voxel_art_gen.export_obj()
-
-
 func _on_Voxelorama_popup_hide() -> void:
 	if global:
 		global.dialog_open(false)
@@ -100,3 +97,11 @@ func _on_ViewportContainer_mouse_entered() -> void:
 
 func _on_ViewportContainer_mouse_exited() -> void:
 	viewport_has_focus = false
+
+
+func _on_SaveButton_pressed() -> void:
+	file_dialog.popup_centered()
+
+
+func _on_FileDialog_file_selected(path: String) -> void:
+	voxel_art_gen.export_obj(path)

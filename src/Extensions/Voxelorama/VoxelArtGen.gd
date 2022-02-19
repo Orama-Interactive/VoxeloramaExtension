@@ -278,12 +278,12 @@ func find_rectangles_in_bitmap(bitmap: BitMap) -> Array:
 # https://github.com/lawnjelly/GodotTweaks/blob/master/ObjExport/ObjExport.gd#L33
 # and
 # https://github.com/mohammedzero43/CSGExport-Godot/blob/master/addons/CSGExport/csgexport.gd#L48
-func export_obj(path := "user://test") -> void:
+func export_obj(path := "user://test.obj") -> void:
 	if !layer_images:
 		return
 	var start := OS.get_ticks_msec()
-#	path = "user://%s" % image_textures[0].resource_path.get_basename().get_file()
-	var file_name: String = path.get_file()
+	var path_no_ext := path.get_basename()
+	var file_name: String = path_no_ext.get_file()
 	var objcont = ""  #.obj content
 	var matcont = ""  #.mat content
 	var vertices_total := 0
@@ -375,7 +375,7 @@ func export_obj(path := "user://test") -> void:
 		if mat.albedo_texture != null:
 			var img_texture: Image = mat.albedo_texture.get_data()
 			img_texture.flip_y()
-			var image_filename: String = path + "_%s.png" % s
+			var image_filename: String = path_no_ext + "_%s.png" % s
 			var error_texture = img_texture.save_png(image_filename)
 			if error_texture != OK:
 				print(error_texture)
@@ -383,13 +383,13 @@ func export_obj(path := "user://test") -> void:
 
 	var fi := File.new()
 # warning-ignore:return_value_discarded
-	fi.open(path + ".obj", File.WRITE)
+	fi.open(path, File.WRITE)
 	fi.store_string(objcont)
 	fi.close()
 
 	var mtlfile := File.new()
 # warning-ignore:return_value_discarded
-	mtlfile.open(path + ".mtl", File.WRITE)
+	mtlfile.open(path_no_ext + ".mtl", File.WRITE)
 	mtlfile.store_string(matcont)
 	mtlfile.close()
 
