@@ -11,8 +11,7 @@ config_version=4
 [application]
 
 config/name="Voxelorama Plugin"
-run/main_scene="res://Voxelorama.tscn"
-config/icon="res://icon.png"
+run/main_scene="res://src/Extensions/Voxelorama/Voxelorama.tscn"
 
 [audio]
 

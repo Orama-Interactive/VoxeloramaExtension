@@ -1,24 +1,22 @@
 extends ConfirmationDialog
 
-var plugin_type := "ImageEffect"
 var viewport_has_focus := false
 var rotate := false
 var pan := false
+var menu_item_id: int
+var global # Only when used as a Pixelorama plugin
 
 onready var voxel_art_gen: MeshInstance = find_node("VoxelArtGen")
 onready var camera: Camera = find_node("Camera")
-onready var global = get_node("/root/Global")  # Only when used as a Pixelorama plugin
 
 
-func _ready() -> void:
+func _enter_tree() -> void:
+	global = get_node("/root/Global")
 	if global:
-		var image_menu: PopupMenu = global.top_menu_container.image_menu_button.get_popup()
-		var idx = image_menu.get_item_count() - 1
-		image_menu.add_item("Voxelorama", idx)
-		image_menu.set_item_metadata(idx, self)
-
-
-#	popup_centered()
+		var image_menu: PopupMenu = global.top_menu_container.find_node("ImageMenu").get_popup()
+		menu_item_id = image_menu.get_item_count() - 1
+		image_menu.add_item("Voxelorama", menu_item_id)
+		image_menu.set_item_metadata(menu_item_id, self)
 
 
 func _input(event: InputEvent) -> void:
@@ -51,8 +49,10 @@ func _input(event: InputEvent) -> void:
 		camera.translation.z += 1
 
 
-func _on_Voxelorama_about_to_show() -> void:
-	generate()
+func _exit_tree() -> void:
+	if global:
+		var image_menu: PopupMenu = global.top_menu_container.image_menu_button.get_popup()
+		image_menu.remove_item(menu_item_id)
 
 
 func generate() -> void:
@@ -67,6 +67,10 @@ func generate() -> void:
 				voxel_art_gen.layer_images.append(image)
 			i += 1
 	voxel_art_gen.generate_mesh()
+
+
+func _on_Voxelorama_about_to_show() -> void:
+	generate()
 
 
 func _on_VoxeloramaDialog_confirmed() -> void:

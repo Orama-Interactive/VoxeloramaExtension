@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://Voxelorama.gd" type="Script" id=1]
-[ext_resource path="res://VoxeloramaPreview.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/Extensions/Voxelorama/Voxelorama.gd" type="Script" id=1]
+[ext_resource path="res://src/Extensions/Voxelorama/VoxeloramaPreview.tscn" type="PackedScene" id=2]
 
 [node name="Voxelorama" type="ConfirmationDialog"]
 anchor_right = 1.0

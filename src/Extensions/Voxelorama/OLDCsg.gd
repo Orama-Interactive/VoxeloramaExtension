@@ -1,6 +1,6 @@
 extends Spatial
 
-var image_tex = preload("icon.png")
+var image_tex
 
 #onready var voxel_parent: Spatial = $VoxelParent
 onready var csg_combiner: CSGCombiner = $CSGCombiner
