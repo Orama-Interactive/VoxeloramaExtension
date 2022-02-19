@@ -52,7 +52,14 @@ func _input(event: InputEvent) -> void:
 func _exit_tree() -> void:
 	if global:
 		var image_menu: PopupMenu = global.top_menu_container.image_menu_button.get_popup()
-		image_menu.remove_item(menu_item_id)
+		var idx: int = image_menu.get_item_index(menu_item_id)
+		image_menu.remove_item(idx)
+
+
+func menu_item_clicked() -> void:
+	popup_centered()
+	if global:
+		global.dialog_open(true)
 
 
 func generate() -> void:
