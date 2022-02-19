@@ -1,22 +1,23 @@
 extends ConfirmationDialog
 
-
-var plugin_type: = "ImageEffect"
+var plugin_type := "ImageEffect"
 var viewport_has_focus := false
 var rotate := false
 var pan := false
 
 onready var voxel_art_gen: MeshInstance = find_node("VoxelArtGen")
 onready var camera: Camera = find_node("Camera")
-onready var global = get_node("/root/Global") # Only when used as a Pixelorama plugin
+onready var global = get_node("/root/Global")  # Only when used as a Pixelorama plugin
 
 
 func _ready() -> void:
 	if global:
-		var image_menu : PopupMenu = global.top_menu_container.image_menu_button.get_popup()
+		var image_menu: PopupMenu = global.top_menu_container.image_menu_button.get_popup()
 		var idx = image_menu.get_item_count() - 1
 		image_menu.add_item("Voxelorama", idx)
 		image_menu.set_item_metadata(idx, self)
+
+
 #	popup_centered()
 
 
@@ -37,12 +38,12 @@ func _input(event: InputEvent) -> void:
 		pan = false
 
 	if rotate and event is InputEventMouseMotion:
-		voxel_art_gen.get_parent().rotation.x += event.relative.y*0.005
-		voxel_art_gen.rotation.y += event.relative.x*0.005
+		voxel_art_gen.get_parent().rotation.x += event.relative.y * 0.005
+		voxel_art_gen.rotation.y += event.relative.x * 0.005
 
 	if pan and event is InputEventMouseMotion:
-		camera.translation.x -= event.relative.x*0.1
-		camera.translation.y += event.relative.y*0.1
+		camera.translation.x -= event.relative.x * 0.1
+		camera.translation.y += event.relative.y * 0.1
 
 	if event.is_action("zoom_in"):
 		camera.translation.z -= 1

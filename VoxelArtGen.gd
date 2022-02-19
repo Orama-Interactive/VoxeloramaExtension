@@ -1,46 +1,91 @@
 extends MeshInstance
 
-
-var cubes := [] # Array of Cube(s)
-var layer_images := [] # Array of Images
+var cubes := []  # Array of Cube(s)
+var layer_images := []  # Array of Images
 var transparent_material := false
 
 onready var camera: Camera = $"../../Camera"
 
 
-class Cube extends Reference:
-	var start_point: = Vector2.ZERO
-	var end_point: = Vector2.ONE
-	var faces: = []
-	var uvs: = [Vector2.ZERO, Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)]
-	var uvs_right: = []
-	var uvs_left: = []
-	var uvs_down: = []
-	var uvs_up: = []
+class Cube:
+	var start_point := Vector2.ZERO
+	var end_point := Vector2.ONE
+	var faces := []
+	var uvs := [Vector2.ZERO, Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)]
+	var uvs_right := []
+	var uvs_left := []
+	var uvs_down := []
+	var uvs_up := []
 	var depth := 1
 	var z_back := 0
 	var z_front := z_back + depth
-
 
 	func _init(_z_back := 0, _depth := 1) -> void:
 		z_back = _z_back
 		depth = _depth
 		z_front = z_back + depth
 
-
 	func generate_faces() -> void:
-		faces.append([Vector3(start_point.x, start_point.y, z_front), Vector3(end_point.x, start_point.y, z_front), Vector3(end_point.x, end_point.y, z_front), Vector3(start_point.x, end_point.y, z_front), Vector3.FORWARD])
-		faces.append([Vector3(start_point.x, start_point.y, z_back), Vector3(end_point.x, start_point.y, z_back), Vector3(end_point.x, end_point.y, z_back), Vector3(start_point.x, end_point.y, z_back), Vector3.BACK])
+		faces.append(
+			[
+				Vector3(start_point.x, start_point.y, z_front),
+				Vector3(end_point.x, start_point.y, z_front),
+				Vector3(end_point.x, end_point.y, z_front),
+				Vector3(start_point.x, end_point.y, z_front),
+				Vector3.FORWARD
+			]
+		)
+		faces.append(
+			[
+				Vector3(start_point.x, start_point.y, z_back),
+				Vector3(end_point.x, start_point.y, z_back),
+				Vector3(end_point.x, end_point.y, z_back),
+				Vector3(start_point.x, end_point.y, z_back),
+				Vector3.BACK
+			]
+		)
 
-		faces.append([Vector3(start_point.x, end_point.y, z_back), Vector3(start_point.x, end_point.y, z_front), Vector3(end_point.x, end_point.y, z_front), Vector3(end_point.x, end_point.y, z_back), Vector3.UP])
-		faces.append([Vector3(start_point.x, start_point.y, z_back), Vector3(start_point.x, start_point.y, z_front), Vector3(end_point.x, start_point.y, z_front), Vector3(end_point.x, start_point.y, z_back), Vector3.DOWN])
+		faces.append(
+			[
+				Vector3(start_point.x, end_point.y, z_back),
+				Vector3(start_point.x, end_point.y, z_front),
+				Vector3(end_point.x, end_point.y, z_front),
+				Vector3(end_point.x, end_point.y, z_back),
+				Vector3.UP
+			]
+		)
+		faces.append(
+			[
+				Vector3(start_point.x, start_point.y, z_back),
+				Vector3(start_point.x, start_point.y, z_front),
+				Vector3(end_point.x, start_point.y, z_front),
+				Vector3(end_point.x, start_point.y, z_back),
+				Vector3.DOWN
+			]
+		)
 
-		faces.append([Vector3(end_point.x, start_point.y, z_back), Vector3(end_point.x, start_point.y, z_front), Vector3(end_point.x, end_point.y, z_front), Vector3(end_point.x, end_point.y, z_back), Vector3.RIGHT])
-		faces.append([Vector3(start_point.x, start_point.y, z_back), Vector3(start_point.x, start_point.y, z_front), Vector3(start_point.x, end_point.y, z_front), Vector3(start_point.x, end_point.y, z_back), Vector3.LEFT])
+		faces.append(
+			[
+				Vector3(end_point.x, start_point.y, z_back),
+				Vector3(end_point.x, start_point.y, z_front),
+				Vector3(end_point.x, end_point.y, z_front),
+				Vector3(end_point.x, end_point.y, z_back),
+				Vector3.RIGHT
+			]
+		)
+		faces.append(
+			[
+				Vector3(start_point.x, start_point.y, z_back),
+				Vector3(start_point.x, start_point.y, z_front),
+				Vector3(start_point.x, end_point.y, z_front),
+				Vector3(start_point.x, end_point.y, z_back),
+				Vector3.LEFT
+			]
+		)
 
-
-	func generate_uvs(image_size:Vector2) -> void:
-		var start_x := start_point.x / image_size.x + 0.5 # We add 0.5 because the vertices are offset to the center of the mesh
+	func generate_uvs(image_size: Vector2) -> void:
+		# We add 0.5 because the vertices are offset to the center of the mesh
+		var start_x := start_point.x / image_size.x + 0.5
 		var start_y := start_point.y / image_size.y + 0.5
 		var end_x := end_point.x / image_size.x + 0.5
 		var end_y := end_point.y / image_size.y + 0.5
@@ -55,12 +100,31 @@ class Cube extends Reference:
 		uvs[2] = Vector2(end_x, end_y)
 		uvs[3] = Vector2(start_x, end_y)
 
-		uvs_right = [Vector2(end_x, start_y), Vector2(end_x, start_y), Vector2(end_x, end_y), Vector2(end_x, end_y)]
-		uvs_left = [Vector2(start_x, start_y), Vector2(start_x, start_y), Vector2(start_x, end_y), Vector2(start_x, end_y)]
+		uvs_right = [
+			Vector2(end_x, start_y),
+			Vector2(end_x, start_y),
+			Vector2(end_x, end_y),
+			Vector2(end_x, end_y)
+		]
+		uvs_left = [
+			Vector2(start_x, start_y),
+			Vector2(start_x, start_y),
+			Vector2(start_x, end_y),
+			Vector2(start_x, end_y)
+		]
 
-		uvs_down = [Vector2(start_x, start_y), Vector2(start_x, start_y), Vector2(end_x, start_y), Vector2(end_x, start_y)]
-		uvs_up = [Vector2(start_x, end_y), Vector2(start_x, end_y), Vector2(end_x, end_y), Vector2(end_x, end_y)]
-
+		uvs_down = [
+			Vector2(start_x, start_y),
+			Vector2(start_x, start_y),
+			Vector2(end_x, start_y),
+			Vector2(end_x, start_y)
+		]
+		uvs_up = [
+			Vector2(start_x, end_y),
+			Vector2(start_x, end_y),
+			Vector2(end_x, end_y),
+			Vector2(end_x, end_y)
+		]
 
 	func draw_cube(st: SurfaceTool) -> void:
 		for face in faces:
@@ -76,27 +140,38 @@ class Cube extends Reference:
 			else:
 				draw_block_face(st, face, uvs)
 
-
 	# https://github.com/godotengine/godot-demo-projects/blob/3.3-f9333dc/3d/voxel/world/chunk.gd#L171
 	func draw_block_face(surface_tool: SurfaceTool, verts, _uvs):
 		var direction: Vector3 = verts[4]
 #		_uvs = [Vector2.ZERO, Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)]
 		if direction == Vector3.BACK or direction == Vector3.DOWN or direction == Vector3.RIGHT:
-			surface_tool.add_uv(_uvs[0]); surface_tool.add_vertex(verts[0])
-			surface_tool.add_uv(_uvs[1]); surface_tool.add_vertex(verts[1])
-			surface_tool.add_uv(_uvs[2]); surface_tool.add_vertex(verts[2])
+			surface_tool.add_uv(_uvs[0])
+			surface_tool.add_vertex(verts[0])
+			surface_tool.add_uv(_uvs[1])
+			surface_tool.add_vertex(verts[1])
+			surface_tool.add_uv(_uvs[2])
+			surface_tool.add_vertex(verts[2])
 
-			surface_tool.add_uv(_uvs[2]); surface_tool.add_vertex(verts[2])
-			surface_tool.add_uv(_uvs[3]); surface_tool.add_vertex(verts[3])
-			surface_tool.add_uv(_uvs[0]); surface_tool.add_vertex(verts[0])
+			surface_tool.add_uv(_uvs[2])
+			surface_tool.add_vertex(verts[2])
+			surface_tool.add_uv(_uvs[3])
+			surface_tool.add_vertex(verts[3])
+			surface_tool.add_uv(_uvs[0])
+			surface_tool.add_vertex(verts[0])
 		else:
-			surface_tool.add_uv(_uvs[2]); surface_tool.add_vertex(verts[2])
-			surface_tool.add_uv(_uvs[1]); surface_tool.add_vertex(verts[1])
-			surface_tool.add_uv(_uvs[0]); surface_tool.add_vertex(verts[0])
+			surface_tool.add_uv(_uvs[2])
+			surface_tool.add_vertex(verts[2])
+			surface_tool.add_uv(_uvs[1])
+			surface_tool.add_vertex(verts[1])
+			surface_tool.add_uv(_uvs[0])
+			surface_tool.add_vertex(verts[0])
 
-			surface_tool.add_uv(_uvs[0]); surface_tool.add_vertex(verts[0])
-			surface_tool.add_uv(_uvs[3]); surface_tool.add_vertex(verts[3])
-			surface_tool.add_uv(_uvs[2]); surface_tool.add_vertex(verts[2])
+			surface_tool.add_uv(_uvs[0])
+			surface_tool.add_vertex(verts[0])
+			surface_tool.add_uv(_uvs[3])
+			surface_tool.add_vertex(verts[3])
+			surface_tool.add_uv(_uvs[2])
+			surface_tool.add_vertex(verts[2])
 
 
 #func _ready() -> void:
@@ -104,7 +179,7 @@ class Cube extends Reference:
 
 
 func generate_mesh() -> void:
-	var start: = OS.get_ticks_msec()
+	var start := OS.get_ticks_msec()
 
 	if layer_images[0]:
 		camera.translation.y = layer_images[0].get_size().y / 8
@@ -131,7 +206,7 @@ func generate_mesh() -> void:
 			cube.generate_faces()
 			cube.generate_uvs(image.get_size())
 
-		var st: = SurfaceTool.new()
+		var st := SurfaceTool.new()
 		st.begin(Mesh.PRIMITIVE_TRIANGLES)
 		for cube in cubes:
 			cube.draw_cube(st)
@@ -152,12 +227,12 @@ func generate_mesh() -> void:
 
 	# Commit to a mesh.
 	mesh = array_mesh
-	var end: = OS.get_ticks_msec()
+	var end := OS.get_ticks_msec()
 	print("Mesh generated in ", end - start, " ms")
 
 
 # Code inspired by user jo_va from https://stackoverflow.com/a/54762668
-func find_rectangles_in_bitmap(bitmap : BitMap) -> Array:
+func find_rectangles_in_bitmap(bitmap: BitMap) -> Array:
 	var width := bitmap.get_size().x
 	var height := bitmap.get_size().y
 
@@ -174,7 +249,8 @@ func find_rectangles_in_bitmap(bitmap : BitMap) -> Array:
 					rect[1] = j
 					found_corner = true
 					break
-			if found_corner: break
+			if found_corner:
+				break
 
 		# Find bottom right corner
 		for i in range(rect[0], rect[2] + 1):
@@ -205,60 +281,77 @@ func find_rectangles_in_bitmap(bitmap : BitMap) -> Array:
 func export_obj(path := "user://test") -> void:
 	if !layer_images:
 		return
-	var start: = OS.get_ticks_msec()
+	var start := OS.get_ticks_msec()
 #	path = "user://%s" % image_textures[0].resource_path.get_basename().get_file()
 	var file_name: String = path.get_file()
-	var objcont = "" #.obj content
-	var matcont = "" #.mat content
+	var objcont = ""  #.obj content
+	var matcont = ""  #.mat content
 	var vertices_total := 0
 
-	objcont += "# Exported from Pixelorama with the Voxelorama plugin\n"
+	objcont += "# Exported from Pixelorama with the Voxelorama plugin, by Orama Interactive\n"
 # warning-ignore:integer_division
 	objcont += "# Number of triangles: " + str(mesh.get_faces().size() / 3) + "\n"
 
-	objcont += "mtllib "+ file_name + ".mtl\n"
-	objcont += "o " + file_name  + "\n"
+	objcont += "mtllib " + file_name + ".mtl\n"
+	objcont += "o " + file_name + "\n"
 
 	for s in mesh.get_surface_count():
-		var mdt: = MeshDataTool.new()
-		var err: = mdt.create_from_surface(mesh, s)
+		var mdt := MeshDataTool.new()
+		var err := mdt.create_from_surface(mesh, s)
 		if err != OK:
 			printerr("Error code: %s" % err)
 			return
 
-		var nVerts = mdt.get_vertex_count()
-		if nVerts == 0:
-			printerr("ObjExport::export : nVerts is 0, aborting")
+		var n_verts = mdt.get_vertex_count()
+		if n_verts == 0:
+			printerr("ObjExport::export : n_verts is 0, aborting")
 			return
 
-		var nFaces = mdt.get_face_count()
+		var n_faces = mdt.get_face_count()
 
 		var vertcont := ""
 		var uvcont := ""
 		var normalcont := ""
 		# positions
-		for i in range (nVerts):
+		for i in range(n_verts):
 			var vertex: Vector3 = mdt.get_vertex(i)
-			vertcont += str("v ", vertex.x, " ", vertex.y, " ", vertex.z, "\n")
+			# str("%.6f" % ) is needed to add extra zeroes in the obj file
+			vertcont += str(
+				"v ",
+				str("%.6f" % vertex.x),
+				" ",
+				str("%.6f" % vertex.y),
+				" ",
+				str("%.6f" % vertex.z),
+				"\n"
+			)
 
 			var uv: Vector2 = mdt.get_vertex_uv(i)
-			uvcont += str("vt ", uv.x, " ", uv.y, "\n")
+			uvcont += str("vt ", str("%.6f" % uv.x), " ", str("%.6f" % uv.y), "\n")
 
 			var norm: Vector3 = mdt.get_vertex_normal(i)
 			norm = norm.normalized()
-			normalcont += str("vn ", norm.x, " ", norm.y, " ", norm.z, "\n")
+			normalcont += str(
+				"vn ",
+				str("%.4f" % norm.x),
+				" ",
+				str("%.4f" % norm.y),
+				" ",
+				str("%.4f" % norm.z),
+				"\n"
+			)
 
 		objcont += vertcont + uvcont + normalcont
 
 		objcont += "g surface" + str(s) + "\n"
-		var mat: = mesh.surface_get_material(s)
+		var mat := mesh.surface_get_material(s)
 		objcont += "usemtl " + str(mat) + "\n"
 
-		for f in range (nFaces):
+		for f in range(n_faces):
 			objcont += "f"
 			for i in 3:
 				# obj expects face vertices in opposite winding order to godot
-				var ind: int = mdt.get_face_vertex(f, 2-i)
+				var ind: int = mdt.get_face_vertex(f, 2 - i)
 
 				# plus one based in obj file
 				ind += 1
@@ -267,33 +360,39 @@ func export_obj(path := "user://test") -> void:
 
 			objcont += "\n"
 
-		vertices_total += nVerts
+		vertices_total += n_verts
 
-		matcont+=str("newmtl "+str(mat))+'\n'
-		matcont+=str("Kd ",mat.albedo_color.r," ",mat.albedo_color.g," ",mat.albedo_color.b)+'\n'
-		matcont+=str("Ke ",mat.emission.r," ",mat.emission.g," ",mat.emission.b)+'\n'
-		matcont+=str("d ",mat.albedo_color.a)+"\n"
+		matcont += str("newmtl " + str(mat)) + "\n"
+		matcont += (
+			str("Kd ", mat.albedo_color.r, " ", mat.albedo_color.g, " ", mat.albedo_color.b)
+			+ "\n"
+		)
+		matcont += str("Ke ", mat.emission.r, " ", mat.emission.g, " ", mat.emission.b) + "\n"
+		matcont += str("d ", mat.albedo_color.a) + "\n"
 
-		# Export texture taken from https://github.com/Variable-ind/Asset-Maker/blob/master/UI/Scripts/Export.gd
+		# Export texture taken from
+		# https://github.com/Variable-ind/Asset-Maker/blob/master/UI/Scripts/Export.gd
 		if mat.albedo_texture != null:
-			var img_texture :Image = mat.albedo_texture.get_data()
+			var img_texture: Image = mat.albedo_texture.get_data()
 			img_texture.flip_y()
 			var image_filename: String = path + "_%s.png" % s
-			var _error = img_texture.save_png(image_filename)
+			var error_texture = img_texture.save_png(image_filename)
+			if error_texture != OK:
+				print(error_texture)
 			matcont += "map_Kd " + file_name + "_%s.png\n" % s
 
-	var fi: = File.new()
+	var fi := File.new()
 # warning-ignore:return_value_discarded
 	fi.open(path + ".obj", File.WRITE)
 	fi.store_string(objcont)
 	fi.close()
 
-	var mtlfile: = File.new()
+	var mtlfile := File.new()
 # warning-ignore:return_value_discarded
 	mtlfile.open(path + ".mtl", File.WRITE)
 	mtlfile.store_string(matcont)
 	mtlfile.close()
 
 	#output message
-	var end: = OS.get_ticks_msec()
+	var end := OS.get_ticks_msec()
 	print("Mesh ", path, " exported in ", end - start, " ms")
