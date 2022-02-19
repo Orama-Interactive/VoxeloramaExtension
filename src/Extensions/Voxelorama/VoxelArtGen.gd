@@ -174,11 +174,7 @@ class Cube:
 			surface_tool.add_vertex(verts[2])
 
 
-#func _ready() -> void:
-#	layer_images.append(preload("icon.png").get_data())
-
-
-func generate_mesh() -> void:
+func generate_mesh(symmetrical := false) -> void:
 	var start := OS.get_ticks_msec()
 
 	if layer_images[0]:
@@ -195,12 +191,18 @@ func generate_mesh() -> void:
 		var bitmap := BitMap.new()
 		bitmap.create_from_image_alpha(image)
 
-		var rectangles := find_rectangles_in_bitmap(bitmap)
+		var rectangles := _find_rectangles_in_bitmap(bitmap)
 		for rect in rectangles:
 			var cube := Cube.new(i)
 			cube.start_point = rect.position - (image.get_size() / 2)
 			cube.end_point = rect.end - (image.get_size() / 2)
 			cubes.append(cube)
+
+			if i != 0 and symmetrical:
+				var cube_s := Cube.new(-i)
+				cube_s.start_point = rect.position - (image.get_size() / 2)
+				cube_s.end_point = rect.end - (image.get_size() / 2)
+				cubes.append(cube_s)
 
 		for cube in cubes:
 			cube.generate_faces()
@@ -232,7 +234,7 @@ func generate_mesh() -> void:
 
 
 # Code inspired by user jo_va from https://stackoverflow.com/a/54762668
-func find_rectangles_in_bitmap(bitmap: BitMap) -> Array:
+func _find_rectangles_in_bitmap(bitmap: BitMap) -> Array:
 	var width := bitmap.get_size().x
 	var height := bitmap.get_size().y
 

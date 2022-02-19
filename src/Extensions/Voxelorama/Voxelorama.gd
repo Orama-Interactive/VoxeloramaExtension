@@ -1,5 +1,6 @@
 extends AcceptDialog
 
+var symmetrical := false
 var viewport_has_focus := false
 var rotate := false
 var pan := false
@@ -74,7 +75,7 @@ func generate() -> void:
 				image.copy_from(cel.image)
 				voxel_art_gen.layer_images.append(image)
 			i += 1
-	voxel_art_gen.generate_mesh()
+	voxel_art_gen.generate_mesh(symmetrical)
 
 
 func _on_Voxelorama_about_to_show() -> void:
@@ -105,3 +106,8 @@ func _on_SaveButton_pressed() -> void:
 
 func _on_FileDialog_file_selected(path: String) -> void:
 	voxel_art_gen.export_obj(path)
+
+
+func _on_Symmetrical_toggled(button_pressed: bool) -> void:
+	symmetrical = button_pressed
+	generate()
