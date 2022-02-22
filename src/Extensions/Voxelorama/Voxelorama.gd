@@ -28,7 +28,7 @@ func _enter_tree() -> void:
 		# Add tool
 		tools = get_node("/root/Tools")
 		depth_tool = tools.Tool.new(
-			"Depth", "Depth", "depth", "", [], "Extensions/Voxelorama/Tools/"
+			"Depth", "Depth", "depth", preload("res://src/Extensions/Voxelorama/Tools/Depth.tscn")
 		)
 		tools.tools["Depth"] = depth_tool
 		tools.add_tool_button(depth_tool)
