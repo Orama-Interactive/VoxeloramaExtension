@@ -5,7 +5,12 @@ var viewport_has_focus := false
 var rotate := false
 var pan := false
 var menu_item_id: int
-var global  # Only when used as a Pixelorama plugin
+var depth_per_image := {}
+
+# Only when used as a Pixelorama plugin
+var global
+var tools
+var depth_tool
 
 onready var voxel_art_gen: MeshInstance = find_node("VoxelArtGen")
 onready var camera: Camera = find_node("Camera")
@@ -19,6 +24,14 @@ func _enter_tree() -> void:
 		menu_item_id = image_menu.get_item_count() - 1
 		image_menu.add_item("Voxelorama", menu_item_id)
 		image_menu.set_item_metadata(menu_item_id, self)
+
+		# Add tool
+		tools = get_node("/root/Tools")
+		depth_tool = tools.Tool.new(
+			"Depth", "Depth", "depth", "", [], "Extensions/Voxelorama/Tools/"
+		)
+		tools.tools["Depth"] = depth_tool
+		tools.add_tool_button(depth_tool)
 
 
 func _input(event: InputEvent) -> void:
@@ -57,6 +70,8 @@ func _exit_tree() -> void:
 		var idx: int = image_menu.get_item_index(menu_item_id)
 		image_menu.remove_item(idx)
 
+		tools.remove_tool(depth_tool)
+
 
 func menu_item_clicked() -> void:
 	popup_centered()
@@ -71,15 +86,18 @@ func generate() -> void:
 		var i := 0
 		for cel in project.frames[project.current_frame].cels:
 			if project.layers[i].visible:
-				var image := Image.new()
-				image.copy_from(cel.image)
-				voxel_art_gen.layer_images.append(image)
+				voxel_art_gen.layer_images.append(cel.image)
 			i += 1
-	voxel_art_gen.generate_mesh(symmetrical)
+	voxel_art_gen.generate_mesh(symmetrical, depth_per_image)
 
 
 func _on_Voxelorama_about_to_show() -> void:
 	generate()
+	var first_layer = voxel_art_gen.layer_images[0]
+	if first_layer:
+		camera.translation.y = first_layer.get_size().y / 8
+		camera.translation.x = first_layer.get_size().x / 8
+		camera.translation.z = max(first_layer.get_size().x, first_layer.get_size().y)
 
 
 func _on_Voxelorama_popup_hide() -> void:

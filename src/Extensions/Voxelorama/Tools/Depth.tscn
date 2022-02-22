@@ -1,0 +1,45 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://src/Extensions/Voxelorama/Tools/Depth.gd" type="Script" id=1]
+
+[node name="DepthTool" type="VBoxContainer"]
+margin_right = 40.0
+margin_bottom = 40.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="."]
+margin_right = 94.0
+margin_bottom = 14.0
+text = "Depth"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_top = 18.0
+margin_right = 94.0
+margin_bottom = 42.0
+
+[node name="DepthHSlider" type="HSlider" parent="HBoxContainer"]
+margin_right = 16.0
+margin_bottom = 16.0
+mouse_default_cursor_shape = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 25.0
+value = 1.0
+allow_greater = true
+
+[node name="DepthSpinBox" type="SpinBox" parent="HBoxContainer"]
+margin_left = 20.0
+margin_right = 94.0
+margin_bottom = 24.0
+mouse_default_cursor_shape = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 25.0
+value = 1.0
+allow_greater = true
+
+[connection signal="value_changed" from="HBoxContainer/DepthHSlider" to="." method="_on_DepthHSlider_value_changed"]
+[connection signal="value_changed" from="HBoxContainer/DepthSpinBox" to="." method="_on_DepthHSlider_value_changed"]

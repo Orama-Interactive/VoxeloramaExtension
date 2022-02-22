@@ -174,14 +174,8 @@ class Cube:
 			surface_tool.add_vertex(verts[2])
 
 
-func generate_mesh(symmetrical := false) -> void:
+func generate_mesh(symmetrical := false, depth_per_image := {}) -> void:
 	var start := OS.get_ticks_msec()
-
-	if layer_images[0]:
-		camera.translation.y = layer_images[0].get_size().y / 8
-		camera.translation.x = layer_images[0].get_size().x / 8
-		camera.translation.z = max(layer_images[0].get_size().x, layer_images[0].get_size().y)
-
 	var array_mesh := ArrayMesh.new()
 	var i := 0
 	for imag in layer_images:
@@ -203,6 +197,27 @@ func generate_mesh(symmetrical := false) -> void:
 				cube_s.start_point = rect.position - (image.get_size() / 2)
 				cube_s.end_point = rect.end - (image.get_size() / 2)
 				cubes.append(cube_s)
+
+		# Desperately needs optimizations
+		if depth_per_image.has(imag):
+			var depth_array: Array = depth_per_image[imag]
+			for x in depth_array.size():
+				for y in depth_array[x].size():
+					if depth_array[x][y] == 1:
+						continue
+
+					var depth: int = depth_array[x][y] - 1
+					var rect := Rect2(x, image.get_size().y - 1 - y, 1, 1)
+					var cube := Cube.new(i + 1, depth)
+					cube.start_point = rect.position - (image.get_size() / 2)
+					cube.end_point = rect.end - (image.get_size() / 2)
+					cubes.append(cube)
+
+					if symmetrical:
+						var cube_s := Cube.new(-(i + depth), depth)
+						cube_s.start_point = rect.position - (image.get_size() / 2)
+						cube_s.end_point = rect.end - (image.get_size() / 2)
+						cubes.append(cube_s)
 
 		for cube in cubes:
 			cube.generate_faces()
