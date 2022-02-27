@@ -84,16 +84,14 @@ class Cube:
 		)
 
 	func generate_uvs(image_size: Vector2) -> void:
-		# We add 0.5 because the vertices are offset to the center of the mesh
-		var start_x := start_point.x / image_size.x + 0.5
-		var start_y := start_point.y / image_size.y + 0.5
-		var end_x := end_point.x / image_size.x + 0.5
-		var end_y := end_point.y / image_size.y + 0.5
-#
-#		var start_x := (start_point.x  + (image_size.x / 2)) / image_size.x
-#		var start_y := (start_point.y + (image_size.y / 2)) / image_size.y
-#		var end_x := (end_point.x + (image_size.x / 2)) / image_size.x
-#		var end_y := (end_point.y + (image_size.y / 2)) / image_size.y
+		var front_offset := 0.0  # Add 0.5 because the vertices are offset to the center of the mesh
+		var hor_side_offset := 1.0 / image_size.x
+		var ver_side_offset := 1.0 / image_size.y
+
+		var start_x := (start_point.x / image_size.x) + front_offset
+		var start_y := (start_point.y / image_size.y) + front_offset
+		var end_x := (end_point.x / image_size.x) + front_offset
+		var end_y := (end_point.y / image_size.y) + front_offset
 
 		uvs[0] = Vector2(start_x, start_y)
 		uvs[1] = Vector2(end_x, start_y)
@@ -101,29 +99,29 @@ class Cube:
 		uvs[3] = Vector2(start_x, end_y)
 
 		uvs_right = [
-			Vector2(end_x, start_y),
+			Vector2(end_x - hor_side_offset, start_y),
 			Vector2(end_x, start_y),
 			Vector2(end_x, end_y),
-			Vector2(end_x, end_y)
+			Vector2(end_x - hor_side_offset, end_y)
 		]
 		uvs_left = [
-			Vector2(start_x, start_y),
+			Vector2(start_x + hor_side_offset, start_y),
 			Vector2(start_x, start_y),
 			Vector2(start_x, end_y),
-			Vector2(start_x, end_y)
+			Vector2(start_x + hor_side_offset, end_y)
 		]
 
 		uvs_down = [
-			Vector2(start_x, start_y),
+			Vector2(start_x, start_y + ver_side_offset),
 			Vector2(start_x, start_y),
 			Vector2(end_x, start_y),
-			Vector2(end_x, start_y)
+			Vector2(end_x, start_y + ver_side_offset)
 		]
 		uvs_up = [
-			Vector2(start_x, end_y),
+			Vector2(start_x, end_y - ver_side_offset),
 			Vector2(start_x, end_y),
 			Vector2(end_x, end_y),
-			Vector2(end_x, end_y)
+			Vector2(end_x, end_y - ver_side_offset)
 		]
 
 	func draw_cube(st: SurfaceTool) -> void:
@@ -187,16 +185,10 @@ func generate_mesh(symmetrical := false, depth_per_image := {}) -> void:
 
 		var rectangles := _find_rectangles_in_bitmap(bitmap)
 		for rect in rectangles:
-			var cube := Cube.new(i)
-			cube.start_point = rect.position - (image.get_size() / 2)
-			cube.end_point = rect.end - (image.get_size() / 2)
-			cubes.append(cube)
+			_create_cube(rect, i)
 
 			if i != 0 and symmetrical:
-				var cube_s := Cube.new(-i)
-				cube_s.start_point = rect.position - (image.get_size() / 2)
-				cube_s.end_point = rect.end - (image.get_size() / 2)
-				cubes.append(cube_s)
+				_create_cube(rect, -i)
 
 		# Desperately needs optimizations
 		if depth_per_image.has(imag):
@@ -208,16 +200,9 @@ func generate_mesh(symmetrical := false, depth_per_image := {}) -> void:
 
 					var depth: int = depth_array[x][y] - 1
 					var rect := Rect2(x, image.get_size().y - 1 - y, 1, 1)
-					var cube := Cube.new(i + 1, depth)
-					cube.start_point = rect.position - (image.get_size() / 2)
-					cube.end_point = rect.end - (image.get_size() / 2)
-					cubes.append(cube)
-
+					_create_cube(rect, i + 1, depth)
 					if symmetrical:
-						var cube_s := Cube.new(-(i + depth), depth)
-						cube_s.start_point = rect.position - (image.get_size() / 2)
-						cube_s.end_point = rect.end - (image.get_size() / 2)
-						cubes.append(cube_s)
+						_create_cube(rect, -(i + depth), depth)
 
 		for cube in cubes:
 			cube.generate_faces()
@@ -291,6 +276,13 @@ func _find_rectangles_in_bitmap(bitmap: BitMap) -> Array:
 	return rectangles
 
 
+func _create_cube(rect: Rect2, _z_back: int, _depth := 1) -> void:
+	var cube := Cube.new(_z_back, _depth)
+	cube.start_point = rect.position
+	cube.end_point = rect.end
+	cubes.append(cube)
+
+
 # Thanks to
 # https://github.com/lawnjelly/GodotTweaks/blob/master/ObjExport/ObjExport.gd#L33
 # and
@@ -301,8 +293,8 @@ func export_obj(path := "user://test.obj") -> void:
 	var start := OS.get_ticks_msec()
 	var path_no_ext := path.get_basename()
 	var file_name: String = path_no_ext.get_file()
-	var objcont = ""  #.obj content
-	var matcont = ""  #.mat content
+	var objcont := ""  # .obj content
+	var matcont := ""  # .mat content
 	var vertices_total := 0
 
 	objcont += "# Exported from Pixelorama with the Voxelorama plugin, by Orama Interactive\n"
@@ -319,17 +311,17 @@ func export_obj(path := "user://test.obj") -> void:
 			printerr("Error code: %s" % err)
 			return
 
-		var n_verts = mdt.get_vertex_count()
+		var n_verts := mdt.get_vertex_count()
 		if n_verts == 0:
 			printerr("ObjExport::export : n_verts is 0, aborting")
 			return
 
-		var n_faces = mdt.get_face_count()
+		var n_faces := mdt.get_face_count()
 
 		var vertcont := ""
 		var uvcont := ""
 		var normalcont := ""
-		# positions
+		# Positions
 		for i in range(n_verts):
 			var vertex: Vector3 = mdt.get_vertex(i)
 			# str("%.6f" % ) is needed to add extra zeroes in the obj file
@@ -367,12 +359,12 @@ func export_obj(path := "user://test.obj") -> void:
 		for f in range(n_faces):
 			objcont += "f"
 			for i in 3:
-				# obj expects face vertices in opposite winding order to godot
+				# Obj expects face vertices in opposite winding order to godot
 				var ind: int = mdt.get_face_vertex(f, 2 - i)
 
-				# plus one based in obj file
+				# Plus one based in obj file
 				ind += 1
-				# vertex, uv, norm
+				# Vertex, uv, norm
 				objcont += " " + str(ind + vertices_total) + "/" + str(ind + vertices_total)
 
 			objcont += "\n"
@@ -410,6 +402,6 @@ func export_obj(path := "user://test.obj") -> void:
 	mtlfile.store_string(matcont)
 	mtlfile.close()
 
-	#output message
+	# Output message
 	var end := OS.get_ticks_msec()
 	print("Mesh ", path, " exported in ", end - start, " ms")
