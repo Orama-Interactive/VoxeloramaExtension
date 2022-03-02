@@ -11,11 +11,11 @@ class Cube:
 	var start_point := Vector2.ZERO
 	var end_point := Vector2.ONE
 	var faces := []
-	var uvs := [Vector2.ZERO, Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)]
-	var uvs_right := []
-	var uvs_left := []
-	var uvs_down := []
-	var uvs_up := []
+	var uvs := PoolVector2Array([Vector2.ZERO, Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)])
+	var uvs_right := PoolVector2Array([])
+	var uvs_left := PoolVector2Array([])
+	var uvs_down := PoolVector2Array([])
+	var uvs_up := PoolVector2Array([])
 	var depth := 1
 	var z_back := 0
 	var z_front := z_back + depth
@@ -139,7 +139,7 @@ class Cube:
 				draw_block_face(st, face, uvs)
 
 	# https://github.com/godotengine/godot-demo-projects/blob/3.3-f9333dc/3d/voxel/world/chunk.gd#L171
-	func draw_block_face(surface_tool: SurfaceTool, verts, _uvs):
+	func draw_block_face(surface_tool: SurfaceTool, verts, _uvs: PoolVector2Array):
 		var direction: Vector3 = verts[4]
 #		_uvs = [Vector2.ZERO, Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)]
 		if direction == Vector3.BACK or direction == Vector3.DOWN or direction == Vector3.RIGHT:
@@ -215,7 +215,7 @@ func generate_mesh(symmetrical := false, depth_per_image := {}) -> void:
 
 		st.generate_normals()
 #		st.index()
-		array_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, st.commit_to_arrays())
+		array_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, st.commit_to_arrays(), [], 256)
 		var image_texture := ImageTexture.new()
 		image_texture.create_from_image(image, 0)
 		var mat := SpatialMaterial.new()
