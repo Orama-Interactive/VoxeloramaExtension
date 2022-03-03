@@ -19,11 +19,13 @@ class Cube:
 	var depth := 1
 	var z_back := 0
 	var z_front := z_back + depth
+	var centered := true
 
-	func _init(_z_back := 0, _depth := 1) -> void:
+	func _init(_z_back := 0, _depth := 1, _centered := true) -> void:
 		z_back = _z_back
 		depth = _depth
 		z_front = z_back + depth
+		centered = _centered
 
 	func generate_faces() -> void:
 		faces.append(
@@ -84,7 +86,9 @@ class Cube:
 		)
 
 	func generate_uvs(image_size: Vector2) -> void:
-		var front_offset := 0.0  # Add 0.5 because the vertices are offset to the center of the mesh
+		var front_offset := 0.5  # Add 0.5 because the vertices are offset to the center of the mesh
+		if !centered:
+			front_offset = 0.0
 		var hor_side_offset := 1.0 / image_size.x
 		var ver_side_offset := 1.0 / image_size.y
 
@@ -172,7 +176,7 @@ class Cube:
 			surface_tool.add_vertex(verts[2])
 
 
-func generate_mesh(symmetrical := false, depth_per_image := {}) -> void:
+func generate_mesh(centered := true, symmetrical := false, depth_per_image := {}) -> void:
 	var start := OS.get_ticks_msec()
 	var array_mesh := ArrayMesh.new()
 	var i := 0
@@ -182,13 +186,16 @@ func generate_mesh(symmetrical := false, depth_per_image := {}) -> void:
 		image.flip_y()
 		var bitmap := BitMap.new()
 		bitmap.create_from_image_alpha(image)
+		var center_offset := Vector2.ZERO
+		if centered:
+			center_offset = image.get_size() / 2
 
 		var rectangles := _find_rectangles_in_bitmap(bitmap)
 		for rect in rectangles:
-			_create_cube(rect, i)
+			_create_cube(rect, i, center_offset)
 
 			if i != 0 and symmetrical:
-				_create_cube(rect, -i)
+				_create_cube(rect, -i, center_offset)
 
 		# Desperately needs optimizations
 		if depth_per_image.has(imag):
@@ -200,9 +207,9 @@ func generate_mesh(symmetrical := false, depth_per_image := {}) -> void:
 
 					var depth: int = depth_array[x][y] - 1
 					var rect := Rect2(x, image.get_size().y - 1 - y, 1, 1)
-					_create_cube(rect, i + 1, depth)
+					_create_cube(rect, i + 1, center_offset, depth)
 					if symmetrical:
-						_create_cube(rect, -(i + depth), depth)
+						_create_cube(rect, -(i + depth), center_offset, depth)
 
 		for cube in cubes:
 			cube.generate_faces()
@@ -276,10 +283,10 @@ func _find_rectangles_in_bitmap(bitmap: BitMap) -> Array:
 	return rectangles
 
 
-func _create_cube(rect: Rect2, _z_back: int, _depth := 1) -> void:
-	var cube := Cube.new(_z_back, _depth)
-	cube.start_point = rect.position
-	cube.end_point = rect.end
+func _create_cube(rect: Rect2, _z_back: int, offset := Vector2.ZERO, _depth := 1) -> void:
+	var cube := Cube.new(_z_back, _depth, offset != Vector2.ZERO)
+	cube.start_point = rect.position - offset
+	cube.end_point = rect.end - offset
 	cubes.append(cube)
 
 

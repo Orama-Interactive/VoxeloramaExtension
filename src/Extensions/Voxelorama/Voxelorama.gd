@@ -1,5 +1,6 @@
 extends AcceptDialog
 
+var centered := true
 var symmetrical := false
 var viewport_has_focus := false
 var rotate := false
@@ -88,7 +89,7 @@ func generate() -> void:
 			if project.layers[i].visible:
 				voxel_art_gen.layer_images.append(cel.image)
 			i += 1
-	voxel_art_gen.generate_mesh(symmetrical, depth_per_image)
+	voxel_art_gen.generate_mesh(centered, symmetrical, depth_per_image)
 
 
 func _on_Voxelorama_about_to_show() -> void:
@@ -128,4 +129,9 @@ func _on_FileDialog_file_selected(path: String) -> void:
 
 func _on_Symmetrical_toggled(button_pressed: bool) -> void:
 	symmetrical = button_pressed
+	generate()
+
+
+func _on_Centered_toggled(button_pressed: bool) -> void:
+	centered = button_pressed
 	generate()
