@@ -93,12 +93,7 @@ func generate() -> void:
 
 
 func _on_Voxelorama_about_to_show() -> void:
-	generate()
-	var first_layer = voxel_art_gen.layer_images[0]
-	if first_layer:
-		camera.translation.y = first_layer.get_size().y / 8
-		camera.translation.x = first_layer.get_size().x / 8
-		camera.translation.z = max(first_layer.get_size().x, first_layer.get_size().y)
+	pass
 
 
 func _on_Voxelorama_popup_hide() -> void:
@@ -108,7 +103,6 @@ func _on_Voxelorama_popup_hide() -> void:
 
 func _on_TransparentMaterials_toggled(button_pressed: bool) -> void:
 	voxel_art_gen.transparent_material = button_pressed
-	generate()
 
 
 func _on_ViewportContainer_mouse_entered() -> void:
@@ -119,7 +113,7 @@ func _on_ViewportContainer_mouse_exited() -> void:
 	viewport_has_focus = false
 
 
-func _on_SaveButton_pressed() -> void:
+func _on_ExportButton_pressed() -> void:
 	file_dialog.popup_centered()
 
 
@@ -133,9 +127,16 @@ func _on_FileDialog_file_selected(path: String) -> void:
 
 func _on_Symmetrical_toggled(button_pressed: bool) -> void:
 	symmetrical = button_pressed
-	generate()
 
 
 func _on_Centered_toggled(button_pressed: bool) -> void:
 	centered = button_pressed
+
+
+func _on_GenerateButton_pressed() -> void:
 	generate()
+	var first_layer: Image = voxel_art_gen.layer_images[0]
+	if first_layer:
+		camera.translation.y = first_layer.get_size().y / 8
+		camera.translation.x = first_layer.get_size().x / 8
+		camera.translation.z = max(first_layer.get_size().x, first_layer.get_size().y)

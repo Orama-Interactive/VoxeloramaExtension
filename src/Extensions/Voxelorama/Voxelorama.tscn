@@ -25,7 +25,7 @@ __meta__ = {
 
 [node name="ViewportContainer" type="ViewportContainer" parent="VBoxContainer"]
 margin_right = 536.0
-margin_bottom = 320.0
+margin_bottom = 296.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 stretch = true
@@ -34,7 +34,7 @@ __meta__ = {
 }
 
 [node name="Viewport" type="Viewport" parent="VBoxContainer/ViewportContainer"]
-size = Vector2( 536, 320 )
+size = Vector2( 536, 296 )
 transparent_bg = true
 handle_input_locally = false
 render_target_update_mode = 0
@@ -42,13 +42,12 @@ render_target_update_mode = 0
 [node name="VoxeloramaPreview" parent="VBoxContainer/ViewportContainer/Viewport" instance=ExtResource( 2 )]
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
-margin_top = 324.0
+margin_top = 300.0
 margin_right = 536.0
-margin_bottom = 348.0
+margin_bottom = 324.0
 
 [node name="Centered" type="CheckBox" parent="VBoxContainer/HBoxContainer"]
-margin_left = 170.0
-margin_right = 278.0
+margin_right = 86.0
 margin_bottom = 24.0
 mouse_default_cursor_shape = 2
 size_flags_horizontal = 0
@@ -56,26 +55,26 @@ pressed = true
 text = "Centered"
 
 [node name="Symmetrical" type="CheckBox" parent="VBoxContainer/HBoxContainer"]
-margin_left = 170.0
-margin_right = 278.0
+margin_left = 90.0
+margin_right = 198.0
 margin_bottom = 24.0
 mouse_default_cursor_shape = 2
 size_flags_horizontal = 0
 text = "Symmetrical"
 
-[node name="TransparentMaterials" type="CheckBox" parent="VBoxContainer/HBoxContainer"]
-margin_right = 166.0
-margin_bottom = 24.0
+[node name="GenerateButton" type="Button" parent="VBoxContainer"]
+margin_top = 328.0
+margin_right = 536.0
+margin_bottom = 348.0
 mouse_default_cursor_shape = 2
-size_flags_horizontal = 0
-text = "Transparent Materials"
+text = "Generate"
 
-[node name="SaveButton" type="Button" parent="VBoxContainer"]
+[node name="ExportButton" type="Button" parent="VBoxContainer"]
 margin_top = 352.0
 margin_right = 536.0
 margin_bottom = 372.0
 mouse_default_cursor_shape = 2
-text = "Save"
+text = "Export"
 
 [node name="FileDialog" type="FileDialog" parent="."]
 margin_left = 8.0
@@ -95,6 +94,6 @@ current_path = "/home/overloaded/Documents/Orama/Pixelorama-Extensions/Voxeloram
 [connection signal="mouse_exited" from="VBoxContainer/ViewportContainer" to="." method="_on_ViewportContainer_mouse_exited"]
 [connection signal="toggled" from="VBoxContainer/HBoxContainer/Centered" to="." method="_on_Centered_toggled"]
 [connection signal="toggled" from="VBoxContainer/HBoxContainer/Symmetrical" to="." method="_on_Symmetrical_toggled"]
-[connection signal="toggled" from="VBoxContainer/HBoxContainer/TransparentMaterials" to="." method="_on_TransparentMaterials_toggled"]
-[connection signal="pressed" from="VBoxContainer/SaveButton" to="." method="_on_SaveButton_pressed"]
+[connection signal="pressed" from="VBoxContainer/GenerateButton" to="." method="_on_GenerateButton_pressed"]
+[connection signal="pressed" from="VBoxContainer/ExportButton" to="." method="_on_ExportButton_pressed"]
 [connection signal="file_selected" from="FileDialog" to="." method="_on_FileDialog_file_selected"]
