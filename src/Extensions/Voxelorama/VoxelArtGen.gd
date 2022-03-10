@@ -412,3 +412,52 @@ func export_obj(path := "user://test.obj") -> void:
 	# Output message
 	var end := OS.get_ticks_msec()
 	print("Mesh ", path, " exported in ", end - start, " ms")
+
+
+func export_svg(path := "user://test.svg") -> void:
+	if !layer_images:
+		return
+
+	var first_layer: Image = layer_images[0]
+	var svg_version := "1.1"
+	var width := first_layer.get_width()
+	var height := first_layer.get_height()
+	var xmlns := "http://www.w3.org/2000/svg"
+
+	var xml := (
+		"""<!--Exported from Pixelorama with the Voxelorama plugin, by Orama Interactive-->
+<svg version= '%s'
+	width='%s' height='%s'
+	xmlns='%s'>
+"""
+		% [svg_version, width, height, xmlns]
+	)
+
+	for imag in layer_images:
+		var image := Image.new()
+		image.copy_from(imag)
+		image.lock()
+		for x in image.get_width():
+			for y in image.get_height():
+				var color := image.get_pixel(x, y)
+				if color.a <= 0:
+					continue
+				var rect := Rect2(x, y, 1, 1)
+				xml += (
+					"<rect x='%s' y='%s' width='%s' height='%s' fill='#%s' />\n"
+					% [
+						rect.position.x,
+						rect.position.y,
+						rect.size.x,
+						rect.size.y,
+						color.to_html(false)
+					]
+				)
+		image.unlock()
+
+	xml += "</svg>"
+	var file: File = File.new()
+	var err := file.open(path, File.WRITE)
+	if err == OK:
+		file.store_string(xml)
+		file.close()

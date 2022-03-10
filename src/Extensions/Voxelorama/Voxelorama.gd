@@ -124,7 +124,11 @@ func _on_SaveButton_pressed() -> void:
 
 
 func _on_FileDialog_file_selected(path: String) -> void:
-	voxel_art_gen.export_obj(path)
+	var file_extension := path.get_extension().to_lower()
+	if file_extension == "svg":
+		voxel_art_gen.export_svg(path)
+	else:
+		voxel_art_gen.export_obj(path)
 
 
 func _on_Symmetrical_toggled(button_pressed: bool) -> void:
