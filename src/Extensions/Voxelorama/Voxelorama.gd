@@ -2,6 +2,7 @@ extends AcceptDialog
 
 var centered := true
 var symmetrical := false
+var merge_frames := false
 var viewport_has_focus := false
 var rotate := false
 var pan := false
@@ -94,7 +95,20 @@ func generate() -> void:
 		var i := 0
 		for cel in project.frames[project.current_frame].cels:
 			if project.layers[i].visible:
-				voxel_art_gen.layer_images.append(cel.image)
+				var image: Image = cel.image
+				if merge_frames:
+					image = Image.new()
+					image.copy_from(cel.image)
+					for j in project.frames.size():
+						var frame_image := Image.new()
+						frame_image.copy_from(project.frames[j].cels[i].image)
+						if j == 0:
+							image = frame_image
+						else:
+							image.blend_rect(
+								frame_image, Rect2(Vector2.ZERO, image.get_size()), Vector2.ZERO
+							)
+				voxel_art_gen.layer_images.append(image)
 			i += 1
 	else:
 		var im: Texture = preload("res://assets/graphics/tools/depth.png")
@@ -137,6 +151,10 @@ func _on_Symmetrical_toggled(button_pressed: bool) -> void:
 
 func _on_Centered_toggled(button_pressed: bool) -> void:
 	centered = button_pressed
+
+
+func _on_MergeFrames_toggled(button_pressed: bool) -> void:
+	merge_frames = button_pressed
 
 
 func _on_ShadedPreview_toggled(button_pressed: bool) -> void:
