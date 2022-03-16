@@ -62,6 +62,15 @@ mouse_default_cursor_shape = 2
 size_flags_horizontal = 0
 text = "Symmetrical"
 
+[node name="ShadedPreview" type="CheckBox" parent="VBoxContainer/HBoxContainer"]
+margin_left = 202.0
+margin_right = 330.0
+margin_bottom = 24.0
+mouse_default_cursor_shape = 2
+size_flags_horizontal = 0
+pressed = true
+text = "Shaded Preview"
+
 [node name="GenerateButton" type="Button" parent="VBoxContainer"]
 margin_top = 328.0
 margin_right = 536.0
@@ -94,6 +103,7 @@ current_path = "/home/overloaded/Documents/Orama/Pixelorama-Extensions/Voxeloram
 [connection signal="mouse_exited" from="VBoxContainer/ViewportContainer" to="." method="_on_ViewportContainer_mouse_exited"]
 [connection signal="toggled" from="VBoxContainer/HBoxContainer/Centered" to="." method="_on_Centered_toggled"]
 [connection signal="toggled" from="VBoxContainer/HBoxContainer/Symmetrical" to="." method="_on_Symmetrical_toggled"]
+[connection signal="toggled" from="VBoxContainer/HBoxContainer/ShadedPreview" to="." method="_on_ShadedPreview_toggled"]
 [connection signal="pressed" from="VBoxContainer/GenerateButton" to="." method="_on_GenerateButton_pressed"]
 [connection signal="pressed" from="VBoxContainer/ExportButton" to="." method="_on_ExportButton_pressed"]
 [connection signal="file_selected" from="FileDialog" to="." method="_on_FileDialog_file_selected"]

@@ -7,6 +7,8 @@ var rotate := false
 var pan := false
 var menu_item_id: int
 var depth_per_image := {}
+var unshaded_env: Environment = preload("res://assets/environments/unshaded.tres")
+var shaded_env: Environment = preload("res://assets/environments/shaded.tres")
 
 # Only when used as a Pixelorama plugin
 var global
@@ -33,6 +35,11 @@ func _enter_tree() -> void:
 		)
 		tools.tools["Depth"] = depth_tool
 		tools.add_tool_button(depth_tool)
+
+
+func _ready() -> void:
+	if !global:
+		popup_centered()
 
 
 func _input(event: InputEvent) -> void:
@@ -89,6 +96,9 @@ func generate() -> void:
 			if project.layers[i].visible:
 				voxel_art_gen.layer_images.append(cel.image)
 			i += 1
+	else:
+		var im: Texture = preload("res://assets/graphics/tools/depth.png")
+		voxel_art_gen.layer_images = [im.get_data()]
 	voxel_art_gen.generate_mesh(centered, symmetrical, depth_per_image)
 
 
@@ -113,10 +123,6 @@ func _on_ViewportContainer_mouse_exited() -> void:
 	viewport_has_focus = false
 
 
-func _on_ExportButton_pressed() -> void:
-	file_dialog.popup_centered()
-
-
 func _on_FileDialog_file_selected(path: String) -> void:
 	var file_extension := path.get_extension().to_lower()
 	if file_extension == "svg":
@@ -133,6 +139,13 @@ func _on_Centered_toggled(button_pressed: bool) -> void:
 	centered = button_pressed
 
 
+func _on_ShadedPreview_toggled(button_pressed: bool) -> void:
+	if button_pressed:
+		camera.environment = shaded_env
+	else:
+		camera.environment = unshaded_env
+
+
 func _on_GenerateButton_pressed() -> void:
 	generate()
 	var first_layer: Image = voxel_art_gen.layer_images[0]
@@ -140,3 +153,7 @@ func _on_GenerateButton_pressed() -> void:
 		camera.translation.y = first_layer.get_size().y / 8
 		camera.translation.x = first_layer.get_size().x / 8
 		camera.translation.z = max(first_layer.get_size().x, first_layer.get_size().y)
+
+
+func _on_ExportButton_pressed() -> void:
+	file_dialog.popup_centered()
