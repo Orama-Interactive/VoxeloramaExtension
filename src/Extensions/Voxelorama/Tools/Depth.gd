@@ -7,7 +7,7 @@ var cursor_text := ""
 
 var _cursor := Vector2.INF
 var _depth_array := []  # 2D array
-var _depth := 1
+var _depth := 1.0
 var _canvas_depth: PackedScene = preload("res://src/Extensions/Voxelorama/Tools/CanvasDepth.tscn")
 var _canvas_depth_node: Node2D
 var _voxelorama_root_node: Node
@@ -50,7 +50,7 @@ func update_config() -> void:
 	$HBoxContainer/DepthSpinBox.value = _depth
 
 
-func draw_start(_position: Vector2) -> void:
+func draw_start(position: Vector2) -> void:
 	if !global:
 		return
 	is_moving = true
@@ -64,6 +64,7 @@ func draw_start(_position: Vector2) -> void:
 			_depth_array.append([])
 			for y in image.get_size().y:
 				_depth_array[x].append(1)
+	_update_array(image, position)
 
 
 func draw_move(position: Vector2) -> void:
@@ -75,9 +76,7 @@ func draw_move(position: Vector2) -> void:
 		draw_start(position)
 	var project = global.current_project
 	var image: Image = project.frames[project.current_frame].cels[project.current_layer].image
-	_depth_array[position.x][position.y] = _depth
-	_voxelorama_root_node.depth_per_image[image] = _depth_array
-	_canvas_depth_node.update()
+	_update_array(image, position)
 
 
 func draw_end(position: Vector2) -> void:
@@ -86,9 +85,7 @@ func draw_end(position: Vector2) -> void:
 	is_moving = false
 	var project = global.current_project
 	var image: Image = project.frames[project.current_frame].cels[project.current_layer].image
-	_depth_array[position.x][position.y] = _depth
-	_voxelorama_root_node.depth_per_image[image] = _depth_array
-	_canvas_depth_node.update()
+	_update_array(image, position)
 
 
 func cursor_move(position: Vector2) -> void:
@@ -105,8 +102,14 @@ func draw_preview() -> void:
 	pass
 
 
+func _update_array(image: Image, position: Vector2) -> void:
+	_depth_array[position.x][position.y] = _depth
+	_voxelorama_root_node.depth_per_image[image] = _depth_array
+	_canvas_depth_node.update()
+
+
 func _on_DepthHSlider_value_changed(value: float) -> void:
-	_depth = int(value)
+	_depth = value
 	update_config()
 	save_config()
 

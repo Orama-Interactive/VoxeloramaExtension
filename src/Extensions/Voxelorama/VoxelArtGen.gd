@@ -16,12 +16,12 @@ class Cube:
 	var uvs_left := PoolVector2Array([])
 	var uvs_down := PoolVector2Array([])
 	var uvs_up := PoolVector2Array([])
-	var depth := 1
-	var z_back := 0
+	var depth := 1.0
+	var z_back := 0.0
 	var z_front := z_back + depth
 	var centered := true
 
-	func _init(_z_back := 0, _depth := 1, _centered := true) -> void:
+	func _init(_z_back := 0.0, _depth := 1.0, _centered := true) -> void:
 		z_back = _z_back
 		depth = _depth
 		z_front = z_back + depth
@@ -200,13 +200,16 @@ func generate_mesh(centered := true, symmetrical := false, depth_per_image := {}
 		# Desperately needs optimizations
 		if depth_per_image.has(imag):
 			var depth_array: Array = depth_per_image[imag]
+			var alpha_map := BitMap.new()
+			alpha_map.create_from_image_alpha(image)
 			for x in depth_array.size():
 				for y in depth_array[x].size():
-					if depth_array[x][y] == 1:
+					var inverted_y = image.get_size().y - 1 - y
+					if depth_array[x][y] == 1 or !alpha_map.get_bit(Vector2(x, inverted_y)):
 						continue
 
-					var depth: int = depth_array[x][y] - 1
-					var rect := Rect2(x, image.get_size().y - 1 - y, 1, 1)
+					var depth: float = depth_array[x][y] - 1.0
+					var rect := Rect2(x, inverted_y, 1, 1)
 					_create_cube(rect, i + 1, center_offset, depth)
 					if symmetrical:
 						_create_cube(rect, -(i + depth), center_offset, depth)
@@ -283,8 +286,8 @@ func _find_rectangles_in_bitmap(bitmap: BitMap) -> Array:
 	return rectangles
 
 
-func _create_cube(rect: Rect2, _z_back: int, offset := Vector2.ZERO, _depth := 1) -> void:
-	var cube := Cube.new(_z_back, _depth, offset != Vector2.ZERO)
+func _create_cube(rect: Rect2, z_back: float, offset := Vector2.ZERO, depth := 1.0) -> void:
+	var cube := Cube.new(z_back, depth, offset != Vector2.ZERO)
 	cube.start_point = rect.position - offset
 	cube.end_point = rect.end - offset
 	cubes.append(cube)
