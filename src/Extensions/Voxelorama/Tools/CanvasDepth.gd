@@ -23,12 +23,14 @@ func _draw() -> void:
 		return
 	var depth_array: Array = _voxelorama_root_node.depth_per_image[image]
 
+	var font: Font = global.control.theme.default_font
+	draw_set_transform(position, rotation, Vector2(0.05, 0.05))
 	image.lock()
 	for x in range(floor(target_rect.position.x), floor(target_rect.end.x)):
 		for y in range(floor(target_rect.position.y), floor(target_rect.end.y)):
 			if image.get_pixel(x, y).a == 0:
 				continue
-			var rect := Rect2(Vector2(x, y), Vector2.ONE)
-			var color_value = (depth_array[x][y] - 1) / 25.0
-			draw_rect(rect, Color(color_value, 0, 0, 0.5))
+			var depth_str := str(depth_array[x][y])
+			draw_string(font, Vector2(x, y) * 20 + Vector2.DOWN * 16, depth_str)
 	image.unlock()
+	draw_set_transform(position, rotation, scale)
