@@ -3,6 +3,7 @@ extends MeshInstance
 var cubes := []  # Array of Cube(s)
 var layer_images := []  # Array of Images
 var transparent_material := false
+var mesh_scale := 1.0
 
 onready var camera: Camera = $"../../Camera"
 
@@ -19,11 +20,13 @@ class Cube:
 	var depth := 1.0
 	var z_back := 0.0
 	var z_front := z_back + depth
+	var scale := 1.0
 	var centered := true
 
-	func _init(_z_back := 0.0, _depth := 1.0, _centered := true) -> void:
-		z_back = _z_back
-		depth = _depth
+	func _init(_z_back := 0.0, _depth := 1.0, _scale := 1.0, _centered := true) -> void:
+		scale = _scale
+		z_back = _z_back * scale
+		depth = _depth * scale
 		z_front = z_back + depth
 		centered = _centered
 
@@ -287,9 +290,9 @@ func _find_rectangles_in_bitmap(bitmap: BitMap) -> Array:
 
 
 func _create_cube(rect: Rect2, z_back: float, offset := Vector2.ZERO, depth := 1.0) -> void:
-	var cube := Cube.new(z_back, depth, offset != Vector2.ZERO)
-	cube.start_point = rect.position - offset
-	cube.end_point = rect.end - offset
+	var cube := Cube.new(z_back, depth, mesh_scale, offset != Vector2.ZERO)
+	cube.start_point = (rect.position - offset) * cube.scale
+	cube.end_point = (rect.end - offset) * cube.scale
 	cubes.append(cube)
 
 

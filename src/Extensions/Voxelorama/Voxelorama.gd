@@ -137,6 +137,12 @@ func _on_ViewportContainer_mouse_exited() -> void:
 	viewport_has_focus = false
 
 
+func _on_Scale_value_changed(value: float) -> void:
+	voxel_art_gen.mesh_scale = value
+	$VBoxContainer/ScaleHBox/ScaleSlider.value = value
+	$VBoxContainer/ScaleHBox/ScaleSpinBox.value = value
+
+
 func _on_FileDialog_file_selected(path: String) -> void:
 	var file_extension := path.get_extension().to_lower()
 	if file_extension == "svg":

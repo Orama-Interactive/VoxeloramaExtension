@@ -6,8 +6,8 @@
 [node name="Voxelorama" type="AcceptDialog"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = -472.0
-margin_bottom = -184.0
+margin_right = -355.0
+margin_bottom = -100.0
 window_title = "Voxelorama"
 resizable = true
 script = ExtResource( 1 )
@@ -15,17 +15,17 @@ script = ExtResource( 1 )
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 anchor_left = 0.5
 anchor_right = 0.5
-margin_left = -268.0
+margin_left = -326.5
 margin_top = 8.0
-margin_right = 268.0
-margin_bottom = 380.0
+margin_right = 326.5
+margin_bottom = 464.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="ViewportContainer" type="ViewportContainer" parent="VBoxContainer"]
-margin_right = 536.0
-margin_bottom = 296.0
+margin_right = 653.0
+margin_bottom = 352.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 stretch = true
@@ -34,17 +34,55 @@ __meta__ = {
 }
 
 [node name="Viewport" type="Viewport" parent="VBoxContainer/ViewportContainer"]
-size = Vector2( 536, 296 )
+size = Vector2( 653, 352 )
 transparent_bg = true
 handle_input_locally = false
 render_target_update_mode = 0
 
 [node name="VoxeloramaPreview" parent="VBoxContainer/ViewportContainer/Viewport" instance=ExtResource( 2 )]
 
+[node name="ScaleHBox" type="HBoxContainer" parent="VBoxContainer"]
+margin_top = 356.0
+margin_right = 653.0
+margin_bottom = 380.0
+
+[node name="Label" type="Label" parent="VBoxContainer/ScaleHBox"]
+margin_top = 5.0
+margin_right = 37.0
+margin_bottom = 19.0
+text = "Scale:"
+
+[node name="ScaleSlider" type="HSlider" parent="VBoxContainer/ScaleHBox"]
+margin_left = 41.0
+margin_top = 4.0
+margin_right = 575.0
+margin_bottom = 20.0
+mouse_default_cursor_shape = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 0.1
+max_value = 10.0
+step = 0.1
+value = 1.0
+allow_greater = true
+tick_count = 10
+ticks_on_borders = true
+
+[node name="ScaleSpinBox" type="SpinBox" parent="VBoxContainer/ScaleHBox"]
+margin_left = 579.0
+margin_right = 653.0
+margin_bottom = 24.0
+mouse_default_cursor_shape = 2
+min_value = 0.1
+max_value = 10.0
+step = 0.1
+value = 1.0
+allow_greater = true
+
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
-margin_top = 300.0
-margin_right = 536.0
-margin_bottom = 324.0
+margin_top = 384.0
+margin_right = 653.0
+margin_bottom = 408.0
 
 [node name="Centered" type="CheckBox" parent="VBoxContainer/HBoxContainer"]
 margin_right = 86.0
@@ -80,24 +118,24 @@ pressed = true
 text = "Shaded Preview"
 
 [node name="GenerateButton" type="Button" parent="VBoxContainer"]
-margin_top = 328.0
-margin_right = 536.0
-margin_bottom = 348.0
+margin_top = 412.0
+margin_right = 653.0
+margin_bottom = 432.0
 mouse_default_cursor_shape = 2
 text = "Generate"
 
 [node name="ExportButton" type="Button" parent="VBoxContainer"]
-margin_top = 352.0
-margin_right = 536.0
-margin_bottom = 372.0
+margin_top = 436.0
+margin_right = 653.0
+margin_bottom = 456.0
 mouse_default_cursor_shape = 2
 text = "Export"
 
 [node name="FileDialog" type="FileDialog" parent="."]
 margin_left = 8.0
 margin_top = 8.0
-margin_right = 544.0
-margin_bottom = 380.0
+margin_right = 661.0
+margin_bottom = 464.0
 resizable = true
 access = 2
 filters = PoolStringArray( "*.obj", "*.svg" )
@@ -109,6 +147,8 @@ current_path = "/home/overloaded/Documents/Orama/Pixelorama-Extensions/Voxeloram
 [connection signal="popup_hide" from="." to="." method="_on_Voxelorama_popup_hide"]
 [connection signal="mouse_entered" from="VBoxContainer/ViewportContainer" to="." method="_on_ViewportContainer_mouse_entered"]
 [connection signal="mouse_exited" from="VBoxContainer/ViewportContainer" to="." method="_on_ViewportContainer_mouse_exited"]
+[connection signal="value_changed" from="VBoxContainer/ScaleHBox/ScaleSlider" to="." method="_on_Scale_value_changed"]
+[connection signal="value_changed" from="VBoxContainer/ScaleHBox/ScaleSpinBox" to="." method="_on_Scale_value_changed"]
 [connection signal="toggled" from="VBoxContainer/HBoxContainer/Centered" to="." method="_on_Centered_toggled"]
 [connection signal="toggled" from="VBoxContainer/HBoxContainer/Symmetrical" to="." method="_on_Symmetrical_toggled"]
 [connection signal="toggled" from="VBoxContainer/HBoxContainer/MergeFrames" to="." method="_on_MergeFrames_toggled"]
