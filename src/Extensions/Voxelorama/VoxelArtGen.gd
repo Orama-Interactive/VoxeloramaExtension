@@ -24,66 +24,66 @@ class Cube:
 	var centered := true
 
 	func _init(_z_back := 0.0, _depth := 1.0, _scale := 1.0, _centered := true) -> void:
+		z_back = _z_back
+		depth = _depth
 		scale = _scale
-		z_back = _z_back * scale
-		depth = _depth * scale
 		z_front = z_back + depth
 		centered = _centered
 
 	func generate_faces() -> void:
 		faces.append(
 			[
-				Vector3(start_point.x, start_point.y, z_front),
-				Vector3(end_point.x, start_point.y, z_front),
-				Vector3(end_point.x, end_point.y, z_front),
-				Vector3(start_point.x, end_point.y, z_front),
+				Vector3(start_point.x, start_point.y, z_front) * scale,
+				Vector3(end_point.x, start_point.y, z_front) * scale,
+				Vector3(end_point.x, end_point.y, z_front) * scale,
+				Vector3(start_point.x, end_point.y, z_front) * scale,
 				Vector3.FORWARD
 			]
 		)
 		faces.append(
 			[
-				Vector3(start_point.x, start_point.y, z_back),
-				Vector3(end_point.x, start_point.y, z_back),
-				Vector3(end_point.x, end_point.y, z_back),
-				Vector3(start_point.x, end_point.y, z_back),
+				Vector3(start_point.x, start_point.y, z_back) * scale,
+				Vector3(end_point.x, start_point.y, z_back) * scale,
+				Vector3(end_point.x, end_point.y, z_back) * scale,
+				Vector3(start_point.x, end_point.y, z_back) * scale,
 				Vector3.BACK
 			]
 		)
 
 		faces.append(
 			[
-				Vector3(start_point.x, end_point.y, z_back),
-				Vector3(start_point.x, end_point.y, z_front),
-				Vector3(end_point.x, end_point.y, z_front),
-				Vector3(end_point.x, end_point.y, z_back),
+				Vector3(start_point.x, end_point.y, z_back) * scale,
+				Vector3(start_point.x, end_point.y, z_front) * scale,
+				Vector3(end_point.x, end_point.y, z_front) * scale,
+				Vector3(end_point.x, end_point.y, z_back) * scale,
 				Vector3.UP
 			]
 		)
 		faces.append(
 			[
-				Vector3(start_point.x, start_point.y, z_back),
-				Vector3(start_point.x, start_point.y, z_front),
-				Vector3(end_point.x, start_point.y, z_front),
-				Vector3(end_point.x, start_point.y, z_back),
+				Vector3(start_point.x, start_point.y, z_back) * scale,
+				Vector3(start_point.x, start_point.y, z_front) * scale,
+				Vector3(end_point.x, start_point.y, z_front) * scale,
+				Vector3(end_point.x, start_point.y, z_back) * scale,
 				Vector3.DOWN
 			]
 		)
 
 		faces.append(
 			[
-				Vector3(end_point.x, start_point.y, z_back),
-				Vector3(end_point.x, start_point.y, z_front),
-				Vector3(end_point.x, end_point.y, z_front),
-				Vector3(end_point.x, end_point.y, z_back),
+				Vector3(end_point.x, start_point.y, z_back) * scale,
+				Vector3(end_point.x, start_point.y, z_front) * scale,
+				Vector3(end_point.x, end_point.y, z_front) * scale,
+				Vector3(end_point.x, end_point.y, z_back) * scale,
 				Vector3.RIGHT
 			]
 		)
 		faces.append(
 			[
-				Vector3(start_point.x, start_point.y, z_back),
-				Vector3(start_point.x, start_point.y, z_front),
-				Vector3(start_point.x, end_point.y, z_front),
-				Vector3(start_point.x, end_point.y, z_back),
+				Vector3(start_point.x, start_point.y, z_back) * scale,
+				Vector3(start_point.x, start_point.y, z_front) * scale,
+				Vector3(start_point.x, end_point.y, z_front) * scale,
+				Vector3(start_point.x, end_point.y, z_back) * scale,
 				Vector3.LEFT
 			]
 		)
@@ -291,8 +291,8 @@ func _find_rectangles_in_bitmap(bitmap: BitMap) -> Array:
 
 func _create_cube(rect: Rect2, z_back: float, offset := Vector2.ZERO, depth := 1.0) -> void:
 	var cube := Cube.new(z_back, depth, mesh_scale, offset != Vector2.ZERO)
-	cube.start_point = (rect.position - offset) * cube.scale
-	cube.end_point = (rect.end - offset) * cube.scale
+	cube.start_point = rect.position - offset
+	cube.end_point = rect.end - offset
 	cubes.append(cube)
 
 
@@ -310,7 +310,7 @@ func export_obj(path := "user://test.obj") -> void:
 	var matcont := ""  # .mat content
 	var vertices_total := 0
 
-	objcont += "# Exported from Pixelorama with the Voxelorama plugin, by Orama Interactive\n"
+	objcont += "# Exported from Pixelorama with the Voxelorama extension, by Orama Interactive\n"
 # warning-ignore:integer_division
 	objcont += "# Number of triangles: " + str(mesh.get_faces().size() / 3) + "\n"
 
@@ -431,7 +431,7 @@ func export_svg(path := "user://test.svg") -> void:
 	var xmlns := "http://www.w3.org/2000/svg"
 
 	var xml := (
-		"""<!--Exported from Pixelorama with the Voxelorama plugin, by Orama Interactive-->
+		"""<!--Exported from Pixelorama with the Voxelorama extension, by Orama Interactive-->
 <svg version= '%s'
 	width='%s' height='%s'
 	xmlns='%s'>

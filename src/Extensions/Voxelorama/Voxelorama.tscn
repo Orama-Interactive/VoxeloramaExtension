@@ -65,8 +65,6 @@ max_value = 10.0
 step = 0.1
 value = 1.0
 allow_greater = true
-tick_count = 10
-ticks_on_borders = true
 
 [node name="ScaleSpinBox" type="SpinBox" parent="VBoxContainer/ScaleHBox"]
 margin_left = 579.0
