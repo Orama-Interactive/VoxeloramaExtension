@@ -58,12 +58,16 @@ func draw_start(position: Vector2) -> void:
 	var project = global.current_project
 	var image: Image = project.frames[project.current_frame].cels[project.current_layer].image
 	if _voxelorama_root_node.depth_per_image.has(image):
-		_depth_array = _voxelorama_root_node.depth_per_image[image]
+		var image_depth_array: Array = _voxelorama_root_node.depth_per_image[image]
+		var n_array_pixels: int = image_depth_array.size() * image_depth_array[0].size()
+		var n_image_pixels: int = image.get_width() * image.get_height()
+
+		if n_array_pixels == n_image_pixels:
+			_depth_array = image_depth_array
+		else:
+			_initialize_array(image)
 	else:
-		for x in image.get_size().x:
-			_depth_array.append([])
-			for y in image.get_size().y:
-				_depth_array[x].append(1)
+		_initialize_array(image)
 	_update_array(image, position)
 
 
@@ -100,6 +104,13 @@ func draw_indicator() -> void:
 
 func draw_preview() -> void:
 	pass
+
+
+func _initialize_array(image: Image) -> void:
+	for x in image.get_width():
+		_depth_array.append([])
+		for y in image.get_height():
+			_depth_array[x].append(1)
 
 
 func _update_array(image: Image, position: Vector2) -> void:
