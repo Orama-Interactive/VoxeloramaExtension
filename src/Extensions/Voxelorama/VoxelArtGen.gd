@@ -183,7 +183,11 @@ func generate_mesh(centered := true, symmetrical := false, depth_per_image := {}
 	var start := OS.get_ticks_msec()
 	var array_mesh := ArrayMesh.new()
 	var i := 0
+	var layer_depth := 0
 	for imag in layer_images:
+		if imag.is_empty() or imag.is_invisible():
+			layer_depth+=1
+			continue
 		var image := Image.new()
 		image.copy_from(imag)
 		image.flip_y()
@@ -195,10 +199,10 @@ func generate_mesh(centered := true, symmetrical := false, depth_per_image := {}
 
 		var rectangles := _find_rectangles_in_bitmap(bitmap)
 		for rect in rectangles:
-			_create_cube(rect, i, center_offset)
+			_create_cube(rect, layer_depth, center_offset)
 
-			if i != 0 and symmetrical:
-				_create_cube(rect, -i, center_offset)
+			if layer_depth != 0 and symmetrical:
+				_create_cube(rect, -layer_depth, center_offset)
 
 		# Desperately needs optimizations
 		if depth_per_image.has(imag):
@@ -213,9 +217,9 @@ func generate_mesh(centered := true, symmetrical := false, depth_per_image := {}
 
 					var depth: float = depth_array[x][y] - 1.0
 					var rect := Rect2(x, inverted_y, 1, 1)
-					_create_cube(rect, i + 1, center_offset, depth)
+					_create_cube(rect, layer_depth + 1, center_offset, depth)
 					if symmetrical:
-						_create_cube(rect, -(i + depth), center_offset, depth)
+						_create_cube(rect, -(layer_depth + depth), center_offset, depth)
 
 		for cube in cubes:
 			cube.generate_faces()
@@ -235,9 +239,10 @@ func generate_mesh(centered := true, symmetrical := false, depth_per_image := {}
 		mat.flags_transparent = transparent_material
 		mat.albedo_texture = image_texture
 		array_mesh.surface_set_material(i, mat)
-		array_mesh.surface_set_name(i, "Layer %s" % i)
+		array_mesh.surface_set_name(i, "Layer %s" % layer_depth)
 		cubes.clear()
 
+		layer_depth += 1
 		i += 1
 
 	# Commit to a mesh.

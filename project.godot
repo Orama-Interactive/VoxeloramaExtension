@@ -10,7 +10,7 @@ config_version=4
 
 [application]
 
-config/name="Voxelorama Plugin"
+config/name="Voxelorama"
 run/main_scene="res://src/Extensions/Voxelorama/Voxelorama.tscn"
 
 [audio]
