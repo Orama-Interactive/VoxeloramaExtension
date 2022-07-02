@@ -7,9 +7,10 @@ var viewport_has_focus := false
 var rotate := false
 var pan := false
 var menu_item_id: int
+var depth_tool_scene: PackedScene = preload("res://src/Extensions/Voxelorama/Tools/Depth.tscn")
 var unshaded_env: Environment = preload("res://assets/environments/unshaded.tres")
 var shaded_env: Environment = preload("res://assets/environments/shaded.tres")
-var voxel_art_gen_script = preload("res://src/Extensions/Voxelorama/VoxelArtGen.gd")
+var voxel_art_gen_script: GDScript = preload("res://src/Extensions/Voxelorama/VoxelArtGen.gd")
 
 # Only when used as a Pixelorama extension
 var extensions_api
@@ -24,9 +25,7 @@ func _enter_tree() -> void:
 	extensions_api = get_node("/root/ExtensionsApi")
 	if extensions_api:
 		menu_item_index = extensions_api.add_menu_item(extensions_api.IMAGE, "Voxelorama", self)
-		extensions_api.add_tool(
-			"Depth", "Depth", "depth", preload("res://src/Extensions/Voxelorama/Tools/Depth.tscn")
-		)
+		extensions_api.add_tool("Depth", "Depth", "depth", depth_tool_scene)
 
 
 func _ready() -> void:
