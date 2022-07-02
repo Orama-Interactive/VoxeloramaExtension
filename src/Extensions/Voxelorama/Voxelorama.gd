@@ -7,9 +7,9 @@ var viewport_has_focus := false
 var rotate := false
 var pan := false
 var menu_item_id: int
-var depth_per_image := {}
 var unshaded_env: Environment = preload("res://assets/environments/unshaded.tres")
 var shaded_env: Environment = preload("res://assets/environments/shaded.tres")
+var voxel_art_gen_script = preload("res://src/Extensions/Voxelorama/VoxelArtGen.gd")
 
 # Only when used as a Pixelorama extension
 var extensions_api
@@ -24,7 +24,9 @@ func _enter_tree() -> void:
 	extensions_api = get_node("/root/ExtensionsApi")
 	if extensions_api:
 		menu_item_index = extensions_api.add_menu_item(extensions_api.IMAGE, "Voxelorama", self)
-		extensions_api.add_tool("Depth", "Depth", "depth", preload("res://src/Extensions/Voxelorama/Tools/Depth.tscn"))
+		extensions_api.add_tool(
+			"Depth", "Depth", "depth", preload("res://src/Extensions/Voxelorama/Tools/Depth.tscn")
+		)
 
 
 func _ready() -> void:
@@ -75,31 +77,35 @@ func menu_item_clicked() -> void:
 
 
 func generate() -> void:
-	if extensions_api:
-		voxel_art_gen.layer_images.clear()
-		var project = extensions_api.get_current_project()
-		var i := 0
-		for cel in project.frames[project.current_frame].cels:
-			if project.layers[i].visible:
-				var image: Image = cel.image
-				if merge_frames:
-					image = Image.new()
-					image.copy_from(cel.image)
-					for j in project.frames.size():
-						var frame_image := Image.new()
-						frame_image.copy_from(project.frames[j].cels[i].image)
-						if j == 0:
-							image = frame_image
-						else:
-							image.blend_rect(
-								frame_image, Rect2(Vector2.ZERO, image.get_size()), Vector2.ZERO
-							)
-				voxel_art_gen.layer_images.append(image)
-			i += 1
-	else:
-		var im: Texture = preload("res://assets/graphics/tools/depth.png")
-		voxel_art_gen.layer_images = [im.get_data()]
-	voxel_art_gen.generate_mesh(centered, symmetrical, depth_per_image)
+	if !extensions_api:
+		return
+
+	voxel_art_gen.layer_images.clear()
+	var project = extensions_api.get_current_project()
+	var i := 0
+	for cel in project.frames[project.current_frame].cels:
+		if project.layers[i].visible:
+			var image: Image = cel.image
+			var depth_data := []
+			if merge_frames:
+				image = Image.new()
+				image.copy_from(cel.image)
+				for j in project.frames.size():
+					var frame_image := Image.new()
+					frame_image.copy_from(project.frames[j].cels[i].image)
+					if j == 0:
+						image = frame_image
+					else:
+						image.blend_rect(
+							frame_image, Rect2(Vector2.ZERO, image.get_size()), Vector2.ZERO
+						)
+			else:
+				if cel.has_meta("VoxelDepth"):
+					depth_data = cel.get_meta("VoxelDepth")
+			var depth_image = voxel_art_gen_script.DepthImage.new(image, depth_data)
+			voxel_art_gen.layer_images.append(depth_image)
+		i += 1
+	voxel_art_gen.generate_mesh(centered, symmetrical)
 
 
 func _on_Voxelorama_about_to_show() -> void:
@@ -158,7 +164,9 @@ func _on_ShadedPreview_toggled(button_pressed: bool) -> void:
 
 func _on_GenerateButton_pressed() -> void:
 	generate()
-	var first_layer: Image = voxel_art_gen.layer_images[0]
+	if voxel_art_gen.layer_images.size() == 0:
+		return
+	var first_layer: Image = voxel_art_gen.layer_images[0].image
 	if first_layer:
 		camera.translation.y = first_layer.get_size().y / 8
 		camera.translation.x = first_layer.get_size().x / 8

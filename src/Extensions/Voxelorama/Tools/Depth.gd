@@ -10,7 +10,6 @@ var _depth_array := []  # 2D array
 var _depth := 1.0
 var _canvas_depth: PackedScene = preload("res://src/Extensions/Voxelorama/Tools/CanvasDepth.tscn")
 var _canvas_depth_node: Node2D
-var _voxelorama_root_node: Node
 
 onready var global = get_node("/root/Global")  # Only when used as a Pixelorama plugin
 
@@ -21,7 +20,6 @@ func _ready() -> void:
 	if global:
 		_canvas_depth_node = _canvas_depth.instance()
 		global.canvas.add_child(_canvas_depth_node)
-		_voxelorama_root_node = global.control.get_node("Extensions/Voxelorama")
 
 
 func save_config() -> void:
@@ -38,11 +36,11 @@ func load_config() -> void:
 
 
 func get_config() -> Dictionary:
-	return {}
+	return {"depth": _depth}
 
 
-func set_config(_config: Dictionary) -> void:
-	pass
+func set_config(config: Dictionary) -> void:
+	_depth = config.get("depth", _depth)
 
 
 func update_config() -> void:
@@ -56,9 +54,11 @@ func draw_start(position: Vector2) -> void:
 	is_moving = true
 	_depth_array = []
 	var project = global.current_project
-	var image: Image = project.frames[project.current_frame].cels[project.current_layer].image
-	if _voxelorama_root_node.depth_per_image.has(image):
-		var image_depth_array: Array = _voxelorama_root_node.depth_per_image[image]
+	var cel: Reference = project.frames[project.current_frame].cels[project.current_layer]
+	var image: Image = cel.image
+	print(cel.has_meta("VoxelDepth"))
+	if cel.has_meta("VoxelDepth"):
+		var image_depth_array: Array = cel.get_meta("VoxelDepth")
 		var n_array_pixels: int = image_depth_array.size() * image_depth_array[0].size()
 		var n_image_pixels: int = image.get_width() * image.get_height()
 
@@ -68,7 +68,7 @@ func draw_start(position: Vector2) -> void:
 			_initialize_array(image)
 	else:
 		_initialize_array(image)
-	_update_array(image, position)
+	_update_array(cel, position)
 
 
 func draw_move(position: Vector2) -> void:
@@ -79,8 +79,8 @@ func draw_move(position: Vector2) -> void:
 	if !is_moving:
 		draw_start(position)
 	var project = global.current_project
-	var image: Image = project.frames[project.current_frame].cels[project.current_layer].image
-	_update_array(image, position)
+	var cel = project.frames[project.current_frame].cels[project.current_layer]
+	_update_array(cel, position)
 
 
 func draw_end(position: Vector2) -> void:
@@ -88,8 +88,8 @@ func draw_end(position: Vector2) -> void:
 		return
 	is_moving = false
 	var project = global.current_project
-	var image: Image = project.frames[project.current_frame].cels[project.current_layer].image
-	_update_array(image, position)
+	var cel = project.frames[project.current_frame].cels[project.current_layer]
+	_update_array(cel, position)
 
 
 func cursor_move(position: Vector2) -> void:
@@ -113,9 +113,9 @@ func _initialize_array(image: Image) -> void:
 			_depth_array[x].append(1)
 
 
-func _update_array(image: Image, position: Vector2) -> void:
+func _update_array(cel: Reference, position: Vector2) -> void:
 	_depth_array[position.x][position.y] = _depth
-	_voxelorama_root_node.depth_per_image[image] = _depth_array
+	cel.set_meta("VoxelDepth", _depth_array)
 	_canvas_depth_node.update()
 
 

@@ -1,33 +1,31 @@
 extends Node2D
 
 var _voxelorama_root_node: Node
-onready var global = get_node("/root/Global")  # Only when used as a Pixelorama plugin
+onready var extensions_api = get_node("/root/ExtensionsApi")
 
 
 func _ready() -> void:
-	if global:
-		_voxelorama_root_node = global.control.get_node("Extensions/Voxelorama")
+	if extensions_api:
+		_voxelorama_root_node = extensions_api.get_extensions_node().get_node("Voxelorama")
 
 
 func _draw() -> void:
-	if !global:
+	if !extensions_api:
 		return
 
-	var target_rect: Rect2 = global.current_project.get_tile_mode_rect()
-	if target_rect.has_no_area():
+	var project = extensions_api.get_current_project()
+	var size: Vector2 = project.size
+	var cel: Reference = project.frames[project.current_frame].cels[project.current_layer]
+	var image: Image = cel.image
+	if !cel.has_meta("VoxelDepth"):
 		return
+	var depth_array: Array = cel.get_meta("VoxelDepth")
 
-	var project = global.current_project
-	var image: Image = project.frames[project.current_frame].cels[project.current_layer].image
-	if !_voxelorama_root_node.depth_per_image.has(image):
-		return
-	var depth_array: Array = _voxelorama_root_node.depth_per_image[image]
-
-	var font: Font = global.control.theme.default_font
+	var font: Font = extensions_api.get_theme().default_font
 	draw_set_transform(position, rotation, Vector2(0.05, 0.05))
 	image.lock()
-	for x in range(floor(target_rect.position.x), floor(target_rect.end.x)):
-		for y in range(floor(target_rect.position.y), floor(target_rect.end.y)):
+	for x in range(size.x):
+		for y in range(size.y):
 			if image.get_pixel(x, y).a == 0:
 				continue
 			var depth_str := str(depth_array[x][y])

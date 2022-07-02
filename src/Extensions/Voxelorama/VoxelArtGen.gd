@@ -1,7 +1,7 @@
 extends MeshInstance
 
 var cubes := []  # Array of Cube(s)
-var layer_images := []  # Array of Images
+var layer_images := []  # Array of DepthImage
 var transparent_material := false
 var mesh_scale := 1.0
 
@@ -179,17 +179,26 @@ class Cube:
 			surface_tool.add_vertex(verts[2])
 
 
-func generate_mesh(centered := true, symmetrical := false, depth_per_image := {}) -> void:
+class DepthImage:
+	var image: Image
+	var depth_data: Array
+
+	func _init(_image: Image, _depth_data := []) -> void:
+		image = _image
+		depth_data = _depth_data
+
+
+func generate_mesh(centered := true, symmetrical := false) -> void:
 	var start := OS.get_ticks_msec()
 	var array_mesh := ArrayMesh.new()
 	var i := 0
 	var layer_depth := 0
 	for imag in layer_images:
-		if imag.is_empty() or imag.is_invisible():
+		if imag.image.is_empty() or imag.image.is_invisible():
 			layer_depth += 1
 			continue
 		var image := Image.new()
-		image.copy_from(imag)
+		image.copy_from(imag.image)
 		image.flip_y()
 		var bitmap := BitMap.new()
 		bitmap.create_from_image_alpha(image)
@@ -205,8 +214,8 @@ func generate_mesh(centered := true, symmetrical := false, depth_per_image := {}
 				_create_cube(rect, -layer_depth, center_offset)
 
 		# Desperately needs optimizations
-		if depth_per_image.has(imag):
-			var depth_array: Array = depth_per_image[imag]
+		if imag.depth_data:
+			var depth_array: Array = imag.depth_data
 			var alpha_map := BitMap.new()
 			alpha_map.create_from_image_alpha(image)
 			for x in depth_array.size():
@@ -446,7 +455,7 @@ func export_svg(path := "user://test.svg") -> void:
 
 	for imag in layer_images:
 		var image := Image.new()
-		image.copy_from(imag)
+		image.copy_from(imag.image)
 		image.lock()
 		for x in image.get_width():
 			for y in image.get_height():
