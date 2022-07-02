@@ -186,7 +186,7 @@ func generate_mesh(centered := true, symmetrical := false, depth_per_image := {}
 	var layer_depth := 0
 	for imag in layer_images:
 		if imag.is_empty() or imag.is_invisible():
-			layer_depth+=1
+			layer_depth += 1
 			continue
 		var image := Image.new()
 		image.copy_from(imag)

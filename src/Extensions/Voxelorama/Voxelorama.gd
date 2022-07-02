@@ -11,10 +11,9 @@ var depth_per_image := {}
 var unshaded_env: Environment = preload("res://assets/environments/unshaded.tres")
 var shaded_env: Environment = preload("res://assets/environments/shaded.tres")
 
-# Only when used as a Pixelorama plugin
-var global
-var tools
-var depth_tool
+# Only when used as a Pixelorama extension
+var extensions_api
+var menu_item_index: int
 
 onready var voxel_art_gen: MeshInstance = find_node("VoxelArtGen")
 onready var camera: Camera = find_node("Camera")
@@ -22,24 +21,14 @@ onready var file_dialog: FileDialog = find_node("FileDialog")
 
 
 func _enter_tree() -> void:
-	global = get_node("/root/Global")
-	if global:
-		var image_menu: PopupMenu = global.top_menu_container.find_node("ImageMenu").get_popup()
-		menu_item_id = image_menu.get_item_count() - 1
-		image_menu.add_item("Voxelorama", menu_item_id)
-		image_menu.set_item_metadata(menu_item_id, self)
-
-		# Add tool
-		tools = get_node("/root/Tools")
-		depth_tool = tools.Tool.new(
-			"Depth", "Depth", "depth", preload("res://src/Extensions/Voxelorama/Tools/Depth.tscn")
-		)
-		tools.tools["Depth"] = depth_tool
-		tools.add_tool_button(depth_tool)
+	extensions_api = get_node("/root/ExtensionsApi")
+	if extensions_api:
+		menu_item_index = extensions_api.add_menu_item(extensions_api.IMAGE, "Voxelorama", self)
+		extensions_api.add_tool("Depth", "Depth", "depth", preload("res://src/Extensions/Voxelorama/Tools/Depth.tscn"))
 
 
 func _ready() -> void:
-	if !global:
+	if !extensions_api:
 		popup_centered()
 
 
@@ -74,24 +63,21 @@ func _input(event: InputEvent) -> void:
 
 
 func _exit_tree() -> void:
-	if global:
-		var image_menu: PopupMenu = global.top_menu_container.image_menu_button.get_popup()
-		var idx: int = image_menu.get_item_index(menu_item_id)
-		image_menu.remove_item(idx)
-
-		tools.remove_tool(depth_tool)
+	if extensions_api:
+		extensions_api.remove_menu_item(extensions_api.IMAGE, menu_item_index)
+		extensions_api.remove_tool("Depth")
 
 
 func menu_item_clicked() -> void:
 	popup_centered()
-	if global:
-		global.dialog_open(true)
+	if extensions_api:
+		extensions_api.dialog_open(true)
 
 
 func generate() -> void:
-	if global:
+	if extensions_api:
 		voxel_art_gen.layer_images.clear()
-		var project = global.current_project
+		var project = extensions_api.get_current_project()
 		var i := 0
 		for cel in project.frames[project.current_frame].cels:
 			if project.layers[i].visible:
@@ -121,8 +107,8 @@ func _on_Voxelorama_about_to_show() -> void:
 
 
 func _on_Voxelorama_popup_hide() -> void:
-	if global:
-		global.dialog_open(false)
+	if extensions_api:
+		extensions_api.dialog_open(false)
 
 
 func _on_TransparentMaterials_toggled(button_pressed: bool) -> void:
