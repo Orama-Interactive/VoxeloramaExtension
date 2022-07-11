@@ -98,10 +98,12 @@ func cursor_move(position: Vector2) -> void:
 	_cursor = position
 
 
-func draw_indicator() -> void:
+func draw_indicator(left: bool) -> void:
 	var rect := Rect2(_cursor, Vector2.ONE)
 	if _canvas:
-		_canvas.indicators.draw_rect(rect, Color.blue, false)
+		var global: Node = extensions_api.get_global()
+		var color: Color = global.left_tool_color if left else global.right_tool_color
+		_canvas.indicators.draw_rect(rect, color, false)
 
 
 func draw_preview() -> void:
