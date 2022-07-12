@@ -88,16 +88,18 @@ func generate() -> void:
 			var depth_data := []
 			if merge_frames:
 				image = Image.new()
-				image.copy_from(cel.image)
 				for j in project.frames.size():
 					var frame_image := Image.new()
-					frame_image.copy_from(project.frames[j].cels[i].image)
+					var cel2: Reference = project.frames[j].cels[i]
+					frame_image.copy_from(cel2.image)
 					if j == 0:
 						image = frame_image
 					else:
 						image.blend_rect(
 							frame_image, Rect2(Vector2.ZERO, image.get_size()), Vector2.ZERO
 						)
+					if cel2.has_meta("VoxelDepth"):
+						depth_data = cel2.get_meta("VoxelDepth")
 			else:
 				if cel.has_meta("VoxelDepth"):
 					depth_data = cel.get_meta("VoxelDepth")
@@ -105,10 +107,6 @@ func generate() -> void:
 			voxel_art_gen.layer_images.append(depth_image)
 		i += 1
 	voxel_art_gen.generate_mesh(centered, symmetrical)
-
-
-func _on_Voxelorama_about_to_show() -> void:
-	pass
 
 
 func _on_Voxelorama_popup_hide() -> void:

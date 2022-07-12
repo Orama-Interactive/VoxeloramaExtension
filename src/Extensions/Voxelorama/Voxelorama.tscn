@@ -138,10 +138,7 @@ resizable = true
 access = 2
 filters = PoolStringArray( "*.obj", "*.svg" )
 show_hidden_files = true
-current_dir = "/home/overloaded/Documents/Orama/Pixelorama-Extensions/VoxeloramaPlugin"
-current_path = "/home/overloaded/Documents/Orama/Pixelorama-Extensions/VoxeloramaPlugin/"
 
-[connection signal="about_to_show" from="." to="." method="_on_Voxelorama_about_to_show"]
 [connection signal="popup_hide" from="." to="." method="_on_Voxelorama_popup_hide"]
 [connection signal="mouse_entered" from="VBoxContainer/ViewportContainer" to="." method="_on_ViewportContainer_mouse_entered"]
 [connection signal="mouse_exited" from="VBoxContainer/ViewportContainer" to="." method="_on_ViewportContainer_mouse_exited"]
