@@ -187,18 +187,29 @@ class DepthImage:
 		image = _image
 		depth_data = _depth_data
 
+	func depth_data_valid() -> bool:
+		if depth_data.empty():
+			return false
+		else:
+			var n_array_pixels: int = depth_data.size() * depth_data[0].size()
+			var n_image_pixels: int = image.get_width() * image.get_height()
+			if n_array_pixels == n_image_pixels:
+				return true
+			else:
+				return false
+
 
 func generate_mesh(centered := true, symmetrical := false) -> void:
 	var start := OS.get_ticks_msec()
 	var array_mesh := ArrayMesh.new()
 	var i := 0
 	var layer_depth := 0
-	for imag in layer_images:
-		if imag.image.is_empty() or imag.image.is_invisible():
+	for depth_image in layer_images:
+		if depth_image.image.is_empty() or depth_image.image.is_invisible():
 			layer_depth += 1
 			continue
 		var image := Image.new()
-		image.copy_from(imag.image)
+		image.copy_from(depth_image.image)
 		image.flip_y()
 		var bitmap := BitMap.new()
 		bitmap.create_from_image_alpha(image)
@@ -214,8 +225,8 @@ func generate_mesh(centered := true, symmetrical := false) -> void:
 				_create_cube(rect, -layer_depth, center_offset)
 
 		# Desperately needs optimizations
-		if imag.depth_data:
-			var depth_array: Array = imag.depth_data
+		if depth_image.depth_data_valid():
+			var depth_array: Array = depth_image.depth_data
 			var alpha_map := BitMap.new()
 			alpha_map.create_from_image_alpha(image)
 			for x in depth_array.size():
@@ -453,9 +464,9 @@ func export_svg(path := "user://test.svg") -> void:
 		% [svg_version, width, height, xmlns]
 	)
 
-	for imag in layer_images:
+	for depth_image in layer_images:
 		var image := Image.new()
-		image.copy_from(imag.image)
+		image.copy_from(depth_image.image)
 		image.lock()
 		for x in image.get_width():
 			for y in image.get_height():
