@@ -190,13 +190,10 @@ class DepthImage:
 	func depth_data_valid() -> bool:
 		if depth_data.empty():
 			return false
-		else:
-			var n_array_pixels: int = depth_data.size() * depth_data[0].size()
-			var n_image_pixels: int = image.get_width() * image.get_height()
-			if n_array_pixels == n_image_pixels:
-				return true
-			else:
-				return false
+
+		var n_array_pixels: int = depth_data.size() * depth_data[0].size()
+		var n_image_pixels: int = image.get_width() * image.get_height()
+		return n_array_pixels == n_image_pixels
 
 
 func generate_mesh(centered := true, symmetrical := false) -> void:
@@ -445,7 +442,7 @@ func export_obj(path := "user://test.obj") -> void:
 	print("Mesh ", path, " exported in ", end - start, " ms")
 
 
-func export_svg(path := "user://test.svg") -> void:
+func export_svg(path := "user://test.svg") -> void:  # WIP
 	if !layer_images:
 		return
 
