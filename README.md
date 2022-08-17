@@ -8,7 +8,7 @@ If you wish to support development of this project, please consider becoming a P
 [![Become a Patron!](https://c5.patreon.com/external/logo/become_a_patron_button.png)](https://patreon.com/OramaInteractive)
 
 ## Download instructions
-Simply clone the repository and open the project in Godot 3.5. Then, export a .pck file and load it into Pixelorama. To load it, you can either drag and drop it, or go to the Edit menu, Preferences, Extensions and click on "Add Extension".
+Simply clone the repository and open the project in Godot 3.5. Then, export a .pck file and load it into Pixelorama. To load it, you can either drag and drop it, or go to the Edit menu, Preferences, Extensions and click on "Add Extension". Voxelorama currently requires Pixelorama v0.10.2 and above.
 
 Note that Voxelorama is still in Early Access and is not recommended for production yet. Feedback and contributions are welcome, of course!
 
