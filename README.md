@@ -1,5 +1,5 @@
 # Voxelorama
-An free and open source extension for [Pixelorama](https://github.com/Orama-Interactive/Pixelorama) that generates 3D voxel art out of 2D pixel art.
+A free and open source extension for [Pixelorama](https://github.com/Orama-Interactive/Pixelorama) that generates 3D voxel art out of 2D pixel art.
 
 ![Made with Voxelorama](https://user-images.githubusercontent.com/35376950/185218214-c8356f86-00ed-4f39-b0f8-458a29d0061b.png)
 
