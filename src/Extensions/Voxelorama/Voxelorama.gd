@@ -75,6 +75,21 @@ func menu_item_clicked() -> void:
 		extensions_api.dialog_open(true)
 
 
+func _on_Voxelorama_about_to_show():
+	initiate_generation()
+
+
+func initiate_generation():
+	generate()
+	if voxel_art_gen.layer_images.size() == 0:
+		return
+	var first_layer: Image = voxel_art_gen.layer_images[0].image
+	if first_layer:
+		camera.translation.y = first_layer.get_size().y / 8
+		camera.translation.x = first_layer.get_size().x / 8
+		camera.translation.z = max(first_layer.get_size().x, first_layer.get_size().y)
+
+
 func generate() -> void:
 	if !extensions_api:
 		return
@@ -160,14 +175,7 @@ func _on_ShadedPreview_toggled(button_pressed: bool) -> void:
 
 
 func _on_GenerateButton_pressed() -> void:
-	generate()
-	if voxel_art_gen.layer_images.size() == 0:
-		return
-	var first_layer: Image = voxel_art_gen.layer_images[0].image
-	if first_layer:
-		camera.translation.y = first_layer.get_size().y / 8
-		camera.translation.x = first_layer.get_size().x / 8
-		camera.translation.z = max(first_layer.get_size().x, first_layer.get_size().y)
+	initiate_generation()
 
 
 func _on_ExportButton_pressed() -> void:
