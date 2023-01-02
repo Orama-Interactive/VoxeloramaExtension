@@ -121,7 +121,7 @@ func generate() -> void:
 			var depth_image = voxel_art_gen_script.DepthImage.new(image, depth_data)
 			voxel_art_gen.layer_images.append(depth_image)
 		i += 1
-	voxel_art_gen.generate_mesh(centered, symmetrical)
+	voxel_art_gen.generate_mesh($"%Status", centered, symmetrical)
 
 
 func _on_Voxelorama_popup_hide() -> void:
@@ -143,8 +143,8 @@ func _on_ViewportContainer_mouse_exited() -> void:
 
 func _on_Scale_value_changed(value: float) -> void:
 	voxel_art_gen.mesh_scale = value
-	$VBoxContainer/ScaleHBox/ScaleSlider.value = value
-	$VBoxContainer/ScaleHBox/ScaleSpinBox.value = value
+	$"%ScaleSlider".value = value
+	$"%ScaleSpinBox".value = value
 
 
 func _on_FileDialog_file_selected(path: String) -> void:
@@ -152,7 +152,7 @@ func _on_FileDialog_file_selected(path: String) -> void:
 	if file_extension == "svg":
 		voxel_art_gen.export_svg(path)
 	else:
-		voxel_art_gen.export_obj(path)
+		voxel_art_gen.export_obj($"%Status", path)
 
 
 func _on_Symmetrical_toggled(button_pressed: bool) -> void:
