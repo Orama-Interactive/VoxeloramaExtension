@@ -3,6 +3,8 @@ extends Node2D
 var _voxelorama_root_node: Node
 onready var extensions_api = get_node("/root/ExtensionsApi")
 
+var users :int = 1
+
 
 func _ready() -> void:
 	if extensions_api:
@@ -32,3 +34,11 @@ func _draw() -> void:
 			draw_string(font, Vector2(x, y) * 20 + Vector2.DOWN * 16, depth_str)
 	image.unlock()
 	draw_set_transform(position, rotation, scale)
+
+
+func request_deletion():
+	users -= 1
+	print(users)
+	if users == 0: # no one is using this node
+		queue_free()
+	# Else there are still active tool using this node so DENIED
