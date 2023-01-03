@@ -88,6 +88,13 @@ func initiate_generation():
 		camera.translation.y = first_layer.get_size().y / 8
 		camera.translation.x = first_layer.get_size().x / 8
 		camera.translation.z = max(first_layer.get_size().x, first_layer.get_size().y)
+	if extensions_api:
+		var project = extensions_api.get_current_project()
+		var global = extensions_api.get_global()
+		var grid_width = Vector2(global.grid_width, global.grid_height)
+		voxel_art_gen.get_child(0).draw_grid_and_axes(
+			project.size * voxel_art_gen.mesh_scale, grid_width
+		)
 
 
 func generate() -> void:
