@@ -6,56 +6,150 @@
 [node name="Voxelorama" type="AcceptDialog"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = -355.0
-margin_bottom = -100.0
+margin_right = -488.0
+margin_bottom = -148.0
 window_title = "Voxelorama"
 resizable = true
 script = ExtResource( 1 )
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-anchor_left = 0.5
-anchor_right = 0.5
-margin_left = -326.5
+[node name="VBoxContainer" type="HBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 8.0
 margin_top = 8.0
-margin_right = 326.5
-margin_bottom = 464.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
+margin_right = -8.0
+margin_bottom = -36.0
 
-[node name="ViewportContainer" type="ViewportContainer" parent="VBoxContainer"]
-margin_right = 653.0
-margin_bottom = 352.0
+[node name="ViewportAndStatus" type="VBoxContainer" parent="VBoxContainer"]
+margin_right = 308.0
+margin_bottom = 408.0
 size_flags_horizontal = 3
+
+[node name="PreviewHeader" type="HBoxContainer" parent="VBoxContainer/ViewportAndStatus"]
+margin_right = 308.0
+margin_bottom = 14.0
+
+[node name="Label" type="Label" parent="VBoxContainer/ViewportAndStatus/PreviewHeader"]
+margin_right = 54.0
+margin_bottom = 14.0
+theme_type_variation = "Header"
+text = "Preview:"
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer/ViewportAndStatus/PreviewHeader"]
+margin_left = 58.0
+margin_right = 308.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+
+[node name="Panel" type="Panel" parent="VBoxContainer/ViewportAndStatus"]
+margin_top = 18.0
+margin_right = 308.0
+margin_bottom = 258.0
 size_flags_vertical = 3
-stretch = true
 __meta__ = {
-"_edit_use_anchors_": false
+"_editor_description_": ""
 }
 
-[node name="Viewport" type="Viewport" parent="VBoxContainer/ViewportContainer"]
-size = Vector2( 653, 352 )
+[node name="ViewportContainer" type="ViewportContainer" parent="VBoxContainer/ViewportAndStatus/Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+stretch = true
+
+[node name="Viewport" type="Viewport" parent="VBoxContainer/ViewportAndStatus/Panel/ViewportContainer"]
+size = Vector2( 308, 240 )
 transparent_bg = true
 handle_input_locally = false
 render_target_update_mode = 0
 
-[node name="VoxeloramaPreview" parent="VBoxContainer/ViewportContainer/Viewport" instance=ExtResource( 2 )]
+[node name="VoxeloramaPreview" parent="VBoxContainer/ViewportAndStatus/Panel/ViewportContainer/Viewport" instance=ExtResource( 2 )]
 
-[node name="ScaleHBox" type="HBoxContainer" parent="VBoxContainer"]
-margin_top = 356.0
-margin_right = 653.0
-margin_bottom = 380.0
+[node name="ShadedPreview" type="CheckBox" parent="VBoxContainer/ViewportAndStatus"]
+margin_left = 180.0
+margin_top = 262.0
+margin_right = 308.0
+margin_bottom = 286.0
+mouse_default_cursor_shape = 2
+size_flags_horizontal = 8
+pressed = true
+text = "Shaded Preview"
 
-[node name="Label" type="Label" parent="VBoxContainer/ScaleHBox"]
+[node name="StatusHeader" type="HBoxContainer" parent="VBoxContainer/ViewportAndStatus"]
+margin_top = 290.0
+margin_right = 308.0
+margin_bottom = 304.0
+
+[node name="Label" type="Label" parent="VBoxContainer/ViewportAndStatus/StatusHeader"]
+margin_right = 43.0
+margin_bottom = 14.0
+theme_type_variation = "Header"
+text = "Status:"
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer/ViewportAndStatus/StatusHeader"]
+margin_left = 47.0
+margin_right = 308.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+
+[node name="StatusPanel" type="Panel" parent="VBoxContainer/ViewportAndStatus"]
+margin_top = 308.0
+margin_right = 308.0
+margin_bottom = 408.0
+rect_min_size = Vector2( 0, 100 )
+
+[node name="Status" type="RichTextLabel" parent="VBoxContainer/ViewportAndStatus/StatusPanel"]
+unique_name_in_owner = true
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 3.0
+margin_top = 3.0
+margin_right = -3.0
+margin_bottom = -3.0
+focus_mode = 2
+selection_enabled = true
+
+[node name="VSeparator" type="VSeparator" parent="VBoxContainer"]
+margin_left = 312.0
+margin_right = 316.0
+margin_bottom = 408.0
+
+[node name="Options" type="VBoxContainer" parent="VBoxContainer"]
+margin_left = 320.0
+margin_right = 520.0
+margin_bottom = 408.0
+rect_min_size = Vector2( 200, 0 )
+
+[node name="OptionsHeader" type="HBoxContainer" parent="VBoxContainer/Options"]
+margin_right = 200.0
+margin_bottom = 14.0
+
+[node name="Label" type="Label" parent="VBoxContainer/Options/OptionsHeader"]
+margin_right = 55.0
+margin_bottom = 14.0
+theme_type_variation = "Header"
+text = "Options:"
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer/Options/OptionsHeader"]
+margin_left = 59.0
+margin_right = 200.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+
+[node name="ScaleHBox" type="HBoxContainer" parent="VBoxContainer/Options"]
+margin_top = 18.0
+margin_right = 200.0
+margin_bottom = 42.0
+
+[node name="Label" type="Label" parent="VBoxContainer/Options/ScaleHBox"]
 margin_top = 5.0
 margin_right = 37.0
 margin_bottom = 19.0
 text = "Scale:"
 
-[node name="ScaleSlider" type="HSlider" parent="VBoxContainer/ScaleHBox"]
+[node name="ScaleSlider" type="HSlider" parent="VBoxContainer/Options/ScaleHBox"]
+unique_name_in_owner = true
 margin_left = 41.0
 margin_top = 4.0
-margin_right = 575.0
+margin_right = 122.0
 margin_bottom = 20.0
 mouse_default_cursor_shape = 2
 size_flags_horizontal = 3
@@ -66,9 +160,10 @@ step = 0.1
 value = 1.0
 allow_greater = true
 
-[node name="ScaleSpinBox" type="SpinBox" parent="VBoxContainer/ScaleHBox"]
-margin_left = 579.0
-margin_right = 653.0
+[node name="ScaleSpinBox" type="SpinBox" parent="VBoxContainer/Options/ScaleHBox"]
+unique_name_in_owner = true
+margin_left = 126.0
+margin_right = 200.0
 margin_bottom = 24.0
 mouse_default_cursor_shape = 2
 min_value = 0.1
@@ -77,12 +172,36 @@ step = 0.1
 value = 1.0
 allow_greater = true
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
-margin_top = 384.0
-margin_right = 653.0
-margin_bottom = 408.0
+[node name="FlagsHeader" type="HBoxContainer" parent="VBoxContainer/Options"]
+margin_top = 46.0
+margin_right = 200.0
+margin_bottom = 60.0
 
-[node name="Centered" type="CheckBox" parent="VBoxContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/Options/FlagsHeader"]
+margin_right = 36.0
+margin_bottom = 14.0
+theme_type_variation = "Header"
+text = "Flags:"
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer/Options/FlagsHeader"]
+margin_left = 40.0
+margin_right = 200.0
+margin_bottom = 14.0
+size_flags_horizontal = 3
+
+[node name="Flags" type="ScrollContainer" parent="VBoxContainer/Options"]
+margin_top = 64.0
+margin_right = 200.0
+margin_bottom = 352.0
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/Options/Flags"]
+margin_right = 200.0
+margin_bottom = 288.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Centered" type="CheckBox" parent="VBoxContainer/Options/Flags/VBoxContainer"]
 margin_right = 86.0
 margin_bottom = 24.0
 mouse_default_cursor_shape = 2
@@ -90,64 +209,66 @@ size_flags_horizontal = 0
 pressed = true
 text = "Centered"
 
-[node name="Symmetrical" type="CheckBox" parent="VBoxContainer/HBoxContainer"]
-margin_left = 90.0
-margin_right = 198.0
-margin_bottom = 24.0
+[node name="Symmetrical" type="CheckBox" parent="VBoxContainer/Options/Flags/VBoxContainer"]
+margin_top = 28.0
+margin_right = 108.0
+margin_bottom = 52.0
 mouse_default_cursor_shape = 2
 size_flags_horizontal = 0
 text = "Symmetrical"
 
-[node name="MergeFrames" type="CheckBox" parent="VBoxContainer/HBoxContainer"]
-margin_left = 202.0
-margin_right = 321.0
-margin_bottom = 24.0
+[node name="MergeFrames" type="CheckBox" parent="VBoxContainer/Options/Flags/VBoxContainer"]
+margin_top = 56.0
+margin_right = 119.0
+margin_bottom = 80.0
 mouse_default_cursor_shape = 2
 size_flags_horizontal = 0
 text = "Merge Frames"
 
-[node name="ShadedPreview" type="CheckBox" parent="VBoxContainer/HBoxContainer"]
-margin_left = 325.0
-margin_right = 453.0
-margin_bottom = 24.0
-mouse_default_cursor_shape = 2
-size_flags_horizontal = 0
-pressed = true
-text = "Shaded Preview"
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer/Options"]
+margin_top = 356.0
+margin_right = 200.0
+margin_bottom = 360.0
 
-[node name="GenerateButton" type="Button" parent="VBoxContainer"]
-margin_top = 412.0
-margin_right = 653.0
-margin_bottom = 432.0
+[node name="GenerateAndExport" type="VBoxContainer" parent="VBoxContainer/Options"]
+margin_top = 364.0
+margin_right = 200.0
+margin_bottom = 408.0
+
+[node name="GenerateButton" type="Button" parent="VBoxContainer/Options/GenerateAndExport"]
+margin_right = 200.0
+margin_bottom = 20.0
 mouse_default_cursor_shape = 2
 text = "Generate"
 
-[node name="ExportButton" type="Button" parent="VBoxContainer"]
-margin_top = 436.0
-margin_right = 653.0
-margin_bottom = 456.0
+[node name="ExportButton" type="Button" parent="VBoxContainer/Options/GenerateAndExport"]
+margin_top = 24.0
+margin_right = 200.0
+margin_bottom = 44.0
 mouse_default_cursor_shape = 2
 text = "Export"
 
 [node name="FileDialog" type="FileDialog" parent="."]
 margin_left = 8.0
 margin_top = 8.0
-margin_right = 661.0
-margin_bottom = 464.0
+margin_right = 528.0
+margin_bottom = 416.0
+rect_min_size = Vector2( 180, 63 )
 resizable = true
 access = 2
 filters = PoolStringArray( "*.obj", "*.svg" )
 show_hidden_files = true
 
+[connection signal="about_to_show" from="." to="." method="_on_Voxelorama_about_to_show"]
 [connection signal="popup_hide" from="." to="." method="_on_Voxelorama_popup_hide"]
-[connection signal="mouse_entered" from="VBoxContainer/ViewportContainer" to="." method="_on_ViewportContainer_mouse_entered"]
-[connection signal="mouse_exited" from="VBoxContainer/ViewportContainer" to="." method="_on_ViewportContainer_mouse_exited"]
-[connection signal="value_changed" from="VBoxContainer/ScaleHBox/ScaleSlider" to="." method="_on_Scale_value_changed"]
-[connection signal="value_changed" from="VBoxContainer/ScaleHBox/ScaleSpinBox" to="." method="_on_Scale_value_changed"]
-[connection signal="toggled" from="VBoxContainer/HBoxContainer/Centered" to="." method="_on_Centered_toggled"]
-[connection signal="toggled" from="VBoxContainer/HBoxContainer/Symmetrical" to="." method="_on_Symmetrical_toggled"]
-[connection signal="toggled" from="VBoxContainer/HBoxContainer/MergeFrames" to="." method="_on_MergeFrames_toggled"]
-[connection signal="toggled" from="VBoxContainer/HBoxContainer/ShadedPreview" to="." method="_on_ShadedPreview_toggled"]
-[connection signal="pressed" from="VBoxContainer/GenerateButton" to="." method="_on_GenerateButton_pressed"]
-[connection signal="pressed" from="VBoxContainer/ExportButton" to="." method="_on_ExportButton_pressed"]
+[connection signal="mouse_entered" from="VBoxContainer/ViewportAndStatus/Panel/ViewportContainer" to="." method="_on_ViewportContainer_mouse_entered"]
+[connection signal="mouse_exited" from="VBoxContainer/ViewportAndStatus/Panel/ViewportContainer" to="." method="_on_ViewportContainer_mouse_exited"]
+[connection signal="toggled" from="VBoxContainer/ViewportAndStatus/ShadedPreview" to="." method="_on_ShadedPreview_toggled"]
+[connection signal="value_changed" from="VBoxContainer/Options/ScaleHBox/ScaleSlider" to="." method="_on_Scale_value_changed"]
+[connection signal="value_changed" from="VBoxContainer/Options/ScaleHBox/ScaleSpinBox" to="." method="_on_Scale_value_changed"]
+[connection signal="toggled" from="VBoxContainer/Options/Flags/VBoxContainer/Centered" to="." method="_on_Centered_toggled"]
+[connection signal="toggled" from="VBoxContainer/Options/Flags/VBoxContainer/Symmetrical" to="." method="_on_Symmetrical_toggled"]
+[connection signal="toggled" from="VBoxContainer/Options/Flags/VBoxContainer/MergeFrames" to="." method="_on_MergeFrames_toggled"]
+[connection signal="pressed" from="VBoxContainer/Options/GenerateAndExport/GenerateButton" to="." method="_on_GenerateButton_pressed"]
+[connection signal="pressed" from="VBoxContainer/Options/GenerateAndExport/ExportButton" to="." method="_on_ExportButton_pressed"]
 [connection signal="file_selected" from="FileDialog" to="." method="_on_FileDialog_file_selected"]

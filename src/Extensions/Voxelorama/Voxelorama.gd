@@ -75,6 +75,28 @@ func menu_item_clicked() -> void:
 		extensions_api.dialog_open(true)
 
 
+func _on_Voxelorama_about_to_show():
+	initiate_generation()
+
+
+func initiate_generation():
+	generate()
+	if voxel_art_gen.layer_images.size() == 0:
+		return
+	var first_layer: Image = voxel_art_gen.layer_images[0].image
+	if first_layer:
+		camera.translation.y = first_layer.get_size().y / 8
+		camera.translation.x = first_layer.get_size().x / 8
+		camera.translation.z = max(first_layer.get_size().x, first_layer.get_size().y)
+	if extensions_api:
+		var project = extensions_api.get_current_project()
+		var global = extensions_api.get_global()
+		var grid_width = Vector2(global.grid_width, global.grid_height)
+		voxel_art_gen.get_child(0).draw_grid_and_axes(
+			project.size * voxel_art_gen.mesh_scale, grid_width
+		)
+
+
 func generate() -> void:
 	if !extensions_api:
 		return
@@ -106,7 +128,7 @@ func generate() -> void:
 			var depth_image = voxel_art_gen_script.DepthImage.new(image, depth_data)
 			voxel_art_gen.layer_images.append(depth_image)
 		i += 1
-	voxel_art_gen.generate_mesh(centered, symmetrical)
+	voxel_art_gen.generate_mesh($"%Status", centered, symmetrical)
 
 
 func _on_Voxelorama_popup_hide() -> void:
@@ -128,8 +150,8 @@ func _on_ViewportContainer_mouse_exited() -> void:
 
 func _on_Scale_value_changed(value: float) -> void:
 	voxel_art_gen.mesh_scale = value
-	$VBoxContainer/ScaleHBox/ScaleSlider.value = value
-	$VBoxContainer/ScaleHBox/ScaleSpinBox.value = value
+	$"%ScaleSlider".value = value
+	$"%ScaleSpinBox".value = value
 
 
 func _on_FileDialog_file_selected(path: String) -> void:
@@ -137,7 +159,7 @@ func _on_FileDialog_file_selected(path: String) -> void:
 	if file_extension == "svg":
 		voxel_art_gen.export_svg(path)
 	else:
-		voxel_art_gen.export_obj(path)
+		voxel_art_gen.export_obj($"%Status", path)
 
 
 func _on_Symmetrical_toggled(button_pressed: bool) -> void:
@@ -160,14 +182,7 @@ func _on_ShadedPreview_toggled(button_pressed: bool) -> void:
 
 
 func _on_GenerateButton_pressed() -> void:
-	generate()
-	if voxel_art_gen.layer_images.size() == 0:
-		return
-	var first_layer: Image = voxel_art_gen.layer_images[0].image
-	if first_layer:
-		camera.translation.y = first_layer.get_size().y / 8
-		camera.translation.x = first_layer.get_size().x / 8
-		camera.translation.z = max(first_layer.get_size().x, first_layer.get_size().y)
+	initiate_generation()
 
 
 func _on_ExportButton_pressed() -> void:

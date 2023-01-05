@@ -196,7 +196,7 @@ class DepthImage:
 		return n_array_pixels == n_image_pixels
 
 
-func generate_mesh(centered := true, symmetrical := false) -> void:
+func generate_mesh(status :RichTextLabel, centered := true, symmetrical := false) -> void:
 	var start := OS.get_ticks_msec()
 	var array_mesh := ArrayMesh.new()
 	var i := 0
@@ -265,7 +265,7 @@ func generate_mesh(centered := true, symmetrical := false) -> void:
 	# Commit to a mesh.
 	mesh = array_mesh
 	var end := OS.get_ticks_msec()
-	print("Mesh generated in ", end - start, " ms")
+	status.text += str("Mesh generated in ", end - start, " ms" + "\n")
 
 
 # Code inspired by user jo_va from https://stackoverflow.com/a/54762668
@@ -322,7 +322,7 @@ func _create_cube(rect: Rect2, z_back: float, offset := Vector2.ZERO, depth := 1
 # https://github.com/lawnjelly/GodotTweaks/blob/master/ObjExport/ObjExport.gd#L33
 # and
 # https://github.com/mohammedzero43/CSGExport-Godot/blob/master/addons/CSGExport/csgexport.gd#L48
-func export_obj(path := "user://test.obj") -> void:
+func export_obj(status :RichTextLabel, path := "user://test.obj") -> void:
 	if !layer_images:
 		return
 	var start := OS.get_ticks_msec()
@@ -422,7 +422,7 @@ func export_obj(path := "user://test.obj") -> void:
 			var image_filename: String = path_no_ext + "_%s.png" % s
 			var error_texture = img_texture.save_png(image_filename)
 			if error_texture != OK:
-				print(error_texture)
+				status.text = str("Texture Error, Code:", error_texture)
 			matcont += "map_Kd " + file_name + "_%s.png\n" % s
 
 	var fi := File.new()
@@ -439,7 +439,7 @@ func export_obj(path := "user://test.obj") -> void:
 
 	# Output message
 	var end := OS.get_ticks_msec()
-	print("Mesh ", path, " exported in ", end - start, " ms")
+	status.text += str("Mesh ", path, " exported in ", end - start, " ms" + "\n")
 
 
 func export_svg(path := "user://test.svg") -> void:  # WIP
