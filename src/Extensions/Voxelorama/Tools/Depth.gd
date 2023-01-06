@@ -21,6 +21,12 @@ func _ready() -> void:
 	load_config()
 	if extensions_api:
 		_canvas = extensions_api.get_canvas()
+		for child in _canvas.get_children():
+			if child.is_in_group("CanvasDepth"):
+				_canvas_depth_node = child
+				_canvas_depth_node.users += 1
+				# We will share single _canvas_depth_node
+				return
 		_canvas_depth_node = _canvas_depth.instance()
 		_canvas.add_child(_canvas_depth_node)
 
@@ -131,6 +137,6 @@ func _on_DepthHSlider_value_changed(value: float) -> void:
 
 func _exit_tree() -> void:
 	if _canvas:
-		_canvas_depth_node.queue_free()
+		_canvas_depth_node.request_deletion()
 		if is_moving:
 			draw_end(_canvas.current_pixel.floor())
