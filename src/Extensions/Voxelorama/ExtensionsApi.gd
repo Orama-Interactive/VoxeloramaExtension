@@ -9,6 +9,7 @@ var panel := PanelAPI.new()
 var theme := ThemeAPI.new()
 var tools := ToolAPI.new()
 var project := ProjectAPI.new()
+var signals := SignalsAPI.new()
 
 
 # The Api Methods Start Here
@@ -79,12 +80,8 @@ class PanelAPI:
 		# get the visibility of tabs
 		return false
 
-	func add_node_as_tab(node: Node, alongside_node: String) -> void:
-		# Adds a "node" as a tab in the same place as an already existing "alongside_node"
-		# INSTRUCTION
-		# After this check if tabs are invisible using (get_tabs_visible),
-		# if they are invisible, then make them visible and do yield(get_tree(), "idle_frame") twice
-		# After that make them invisible again
+	func add_node_as_tab(node: Node) -> void:
+		# Adds a "node" as a tab
 		pass
 
 	func remove_node_from_tab(node: Node) -> void:
@@ -144,4 +141,41 @@ class ProjectAPI:
 		# As there are more than one types of cel in Pixelorama,
 		# An extension may try to use a GroupCel as a PixelCel (if it doesn't know the difference)
 		# So it's encouraged to use this function to access cels
+
+		# type can be "GroupCel", "PixelCel", "Cel3D", and "BaseCel"
 		return {"cel": null, "type": ""}
+
+	func get_cel_info_at(project, frame: int, layer: int) -> Dictionary:
+		# frames from left to right, layers from bottom to top
+		# frames/layers start at "0"
+		# and end at (project.frames.size() - 1) and (project.layers.size() - 1) respectively
+		return {"cel": null, "type": ""}
+
+
+class SignalsAPI:
+	# Global signals
+	func connect_project_changed(target: Object, method: String):
+		return
+
+	func disconnect_project_changed(target: Object, method: String):
+		return
+
+	func connect_cel_changed(target: Object, method: String):
+		return
+
+	func disconnect_cel_changed(target: Object, method: String):
+		return
+
+	# Tool Signal
+	func connect_tool_color_changed(target: Object, method: String):
+		return
+
+	func disconnect_tool_color_changed(target: Object, method: String):
+		return
+
+	# updater signals
+	func connect_current_cel_texture_changed(target: Object, method: String):
+		return
+
+	func disconnect_current_cel_texture_changed(target: Object, method: String):
+		return
