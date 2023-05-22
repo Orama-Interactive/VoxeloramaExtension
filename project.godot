@@ -17,6 +17,10 @@ run/main_scene="res://src/Extensions/Voxelorama/Voxelorama.tscn"
 
 driver="Dummy"
 
+[autoload]
+
+ExtensionsApi="*res://src/Extensions/Voxelorama/ExtensionsApi.gd"
+
 [input]
 
 left_mouse={

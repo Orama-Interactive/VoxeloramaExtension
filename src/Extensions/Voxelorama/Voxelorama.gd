@@ -13,7 +13,6 @@ var shaded_env: Environment = preload("res://assets/environments/shaded.tres")
 var voxel_art_gen_script: GDScript = preload("res://src/Extensions/Voxelorama/VoxelArtGen.gd")
 
 # Only when used as a Pixelorama extension
-var extensions_api
 var menu_item_index: int
 
 onready var voxel_art_gen: MeshInstance = find_node("VoxelArtGen")
@@ -22,15 +21,8 @@ onready var file_dialog: FileDialog = find_node("FileDialog")
 
 
 func _enter_tree() -> void:
-	extensions_api = get_node("/root/ExtensionsApi")
-	if extensions_api:
-		menu_item_index = extensions_api.add_menu_item(extensions_api.IMAGE, "Voxelorama", self)
-		extensions_api.add_tool("Depth", "Depth", "depth", depth_tool_scene)
-
-
-func _ready() -> void:
-	if !extensions_api:
-		popup_centered()
+	menu_item_index = ExtensionsApi.menu.add_menu_item(ExtensionsApi.menu.IMAGE, "Voxelorama", self)
+	ExtensionsApi.tools.add_tool("Depth", "Depth", "depth", depth_tool_scene)
 
 
 func _input(event: InputEvent) -> void:
@@ -64,15 +56,13 @@ func _input(event: InputEvent) -> void:
 
 
 func _exit_tree() -> void:
-	if extensions_api:
-		extensions_api.remove_menu_item(extensions_api.IMAGE, menu_item_index)
-		extensions_api.remove_tool("Depth")
+	ExtensionsApi.menu.remove_menu_item(ExtensionsApi.menu.IMAGE, menu_item_index)
+	ExtensionsApi.tools.remove_tool("Depth")
 
 
 func menu_item_clicked() -> void:
 	popup_centered()
-	if extensions_api:
-		extensions_api.dialog_open(true)
+	ExtensionsApi.dialog.dialog_open(true)
 
 
 func _on_Voxelorama_about_to_show():
@@ -88,21 +78,17 @@ func initiate_generation():
 		camera.translation.y = first_layer.get_size().y / 8
 		camera.translation.x = first_layer.get_size().x / 8
 		camera.translation.z = max(first_layer.get_size().x, first_layer.get_size().y)
-	if extensions_api:
-		var project = extensions_api.get_current_project()
-		var global = extensions_api.get_global()
-		var grid_width = Vector2(global.grid_width, global.grid_height)
-		voxel_art_gen.get_child(0).draw_grid_and_axes(
-			project.size * voxel_art_gen.mesh_scale, grid_width
-		)
+
+	var project = ExtensionsApi.project.get_current_project()
+	var global = ExtensionsApi.general.get_global()
+	voxel_art_gen.get_child(0).draw_grid_and_axes(
+		project.size * voxel_art_gen.mesh_scale, global.grid_size
+	)
 
 
 func generate() -> void:
-	if !extensions_api:
-		return
-
 	voxel_art_gen.layer_images.clear()
-	var project = extensions_api.get_current_project()
+	var project = ExtensionsApi.project.get_current_project()
 	var i := 0
 	for cel in project.frames[project.current_frame].cels:
 		if project.layers[i].visible:
@@ -132,8 +118,7 @@ func generate() -> void:
 
 
 func _on_Voxelorama_popup_hide() -> void:
-	if extensions_api:
-		extensions_api.dialog_open(false)
+	ExtensionsApi.dialog.dialog_open(false)
 
 
 func _on_TransparentMaterials_toggled(button_pressed: bool) -> void:

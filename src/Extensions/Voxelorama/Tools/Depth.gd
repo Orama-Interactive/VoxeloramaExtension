@@ -13,35 +13,30 @@ var _canvas_depth_node: Node2D
 
 var _canvas: Node2D
 
-onready var extensions_api = get_node("/root/ExtensionsApi")
-
-
 func _ready() -> void:
 	kname = name.replace(" ", "_").to_lower()
 	load_config()
-	if extensions_api:
-		_canvas = extensions_api.get_canvas()
-		for child in _canvas.get_children():
-			if child.is_in_group("CanvasDepth"):
-				_canvas_depth_node = child
-				_canvas_depth_node.users += 1
-				# We will share single _canvas_depth_node
-				return
-		_canvas_depth_node = _canvas_depth.instance()
-		_canvas.add_child(_canvas_depth_node)
+
+	_canvas = ExtensionsApi.general.get_canvas()
+	for child in _canvas.get_children():
+		if child.is_in_group("CanvasDepth"):
+			_canvas_depth_node = child
+			_canvas_depth_node.users += 1
+			# We will share single _canvas_depth_node
+			return
+	_canvas_depth_node = _canvas_depth.instance()
+	_canvas.add_child(_canvas_depth_node)
 
 
 func save_config() -> void:
-	if extensions_api:
-		var config := get_config()
-		extensions_api.get_config_file().set_value(tool_slot.kname, kname, config)
+	var config := get_config()
+	ExtensionsApi.general.get_config_file().set_value(tool_slot.kname, kname, config)
 
 
 func load_config() -> void:
-	if extensions_api:
-		var value = extensions_api.get_config_file().get_value(tool_slot.kname, kname, {})
-		set_config(value)
-		update_config()
+	var value = ExtensionsApi.general.get_config_file().get_value(tool_slot.kname, kname, {})
+	set_config(value)
+	update_config()
 
 
 func get_config() -> Dictionary:
@@ -58,11 +53,9 @@ func update_config() -> void:
 
 
 func draw_start(position: Vector2) -> void:
-	if !extensions_api:
-		return
 	is_moving = true
 	_depth_array = []
-	var project = extensions_api.get_current_project()
+	var project = ExtensionsApi.project.get_current_project()
 	var cel: Reference = project.frames[project.current_frame].cels[project.current_layer]
 	var image: Image = cel.image
 	if cel.has_meta("VoxelDepth"):
@@ -80,22 +73,18 @@ func draw_start(position: Vector2) -> void:
 
 
 func draw_move(position: Vector2) -> void:
-	if !extensions_api:
-		return
 	# This can happen if the user switches between tools with a shortcut
 	# while using another tool
 	if !is_moving:
 		draw_start(position)
-	var project = extensions_api.get_current_project()
+	var project = ExtensionsApi.project.get_current_project()
 	var cel = project.frames[project.current_frame].cels[project.current_layer]
 	_update_array(cel, position)
 
 
 func draw_end(position: Vector2) -> void:
-	if !extensions_api:
-		return
 	is_moving = false
-	var project = extensions_api.get_current_project()
+	var project = ExtensionsApi.project.get_current_project()
 	var cel = project.frames[project.current_frame].cels[project.current_layer]
 	_update_array(cel, position)
 
@@ -107,7 +96,7 @@ func cursor_move(position: Vector2) -> void:
 func draw_indicator(left: bool) -> void:
 	var rect := Rect2(_cursor, Vector2.ONE)
 	if _canvas:
-		var global: Node = extensions_api.get_global()
+		var global: Node = ExtensionsApi.general.get_global()
 		var color: Color = global.left_tool_color if left else global.right_tool_color
 		_canvas.indicators.draw_rect(rect, color, false)
 
