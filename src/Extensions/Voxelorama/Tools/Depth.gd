@@ -6,7 +6,7 @@ var tool_slot = null  # Tools.Slot
 var cursor_text := ""
 
 var _cursor := Vector2.INF
-var _depth_array := []  # 2D array
+var _depth_array: Array[PackedFloat32Array] = []
 var _depth := 1.0
 var _canvas_depth := preload("res://src/Extensions/Voxelorama/Tools/CanvasDepth.tscn")
 var _canvas_depth_node: Node2D
@@ -60,7 +60,7 @@ func draw_start(position: Vector2) -> void:
 	var cel: RefCounted = project.frames[project.current_frame].cels[project.current_layer]
 	var image: Image = cel.image
 	if cel.has_meta("VoxelDepth"):
-		var image_depth_array: Array = cel.get_meta("VoxelDepth")
+		var image_depth_array: Array[PackedFloat32Array] = cel.get_meta("VoxelDepth")
 		var n_array_pixels: int = image_depth_array.size() * image_depth_array[0].size()
 		var n_image_pixels: int = image.get_width() * image.get_height()
 
@@ -108,7 +108,7 @@ func draw_preview() -> void:
 
 func _initialize_array(image: Image) -> void:
 	for x in image.get_width():
-		_depth_array.append([])
+		_depth_array.append(PackedFloat32Array())
 		for y in image.get_height():
 			_depth_array[x].append(1)
 

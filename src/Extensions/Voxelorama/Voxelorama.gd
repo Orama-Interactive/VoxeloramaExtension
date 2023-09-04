@@ -93,7 +93,7 @@ func generate() -> void:
 	for cel in project.frames[project.current_frame].cels:
 		if project.layers[i].visible:
 			var image: Image = cel.image
-			var depth_data := []
+			var depth_data: Array[PackedFloat32Array] = []
 			if merge_frames:
 				image = Image.new()
 				for j in project.frames.size():
@@ -117,8 +117,9 @@ func generate() -> void:
 	voxel_art_gen.generate_mesh($"%Status", centered, symmetrical)
 
 
-func _on_Voxelorama_popup_hide() -> void:
-	ExtensionsApi.dialog.dialog_open(false)
+func _on_visibility_changed() -> void:
+	if not visible:
+		ExtensionsApi.dialog.dialog_open(false)
 
 
 func _on_TransparentMaterials_toggled(button_pressed: bool) -> void:

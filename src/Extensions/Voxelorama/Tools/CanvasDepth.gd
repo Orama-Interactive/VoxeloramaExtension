@@ -11,7 +11,7 @@ func _ready() -> void:
 
 func _draw() -> void:
 	var project = ExtensionsApi.project.get_current_project()
-	var size: Vector2 = project.size
+	var size: Vector2i = project.size
 	var cel: RefCounted = project.frames[project.current_frame].cels[project.current_layer]
 	var image: Image = cel.image
 	if !cel.has_meta("VoxelDepth"):
@@ -29,13 +29,16 @@ func _draw() -> void:
 				font,
 				Vector2(x, y) * 20 + Vector2.DOWN * 16,
 				depth_str,
+				HORIZONTAL_ALIGNMENT_LEFT,
+				-1,
+				16,
 				get_color(depth_array[x][y])
 			)
 	draw_set_transform(position, rotation, scale)
 
 
-func get_color(depth: float):
-	var weight = 0
+func get_color(depth: float) -> Color:
+	var weight := 0
 	var color_a := Color.RED
 	var color_b := Color.WHITE
 	if depth > 0 and depth <= 5:
