@@ -121,7 +121,7 @@ class ToolAPI:
 		scene: PackedScene,
 		extra_hint := "",
 		extra_shortucts := [],
-		layer_types: PoolIntArray = []
+		layer_types: PackedInt32Array = []
 	) -> void:
 		# Adds a tool with the above detail
 		pass

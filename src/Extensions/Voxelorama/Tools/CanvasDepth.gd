@@ -2,7 +2,7 @@ extends Node2D
 
 var _voxelorama_root_node: Node
 
-var users :int = 1
+var users := 1
 
 
 func _ready() -> void:
@@ -13,7 +13,7 @@ func _ready() -> void:
 func _draw() -> void:
 	var project = ExtensionsApi.project.get_current_project()
 	var size: Vector2 = project.size
-	var cel: Reference = project.frames[project.current_frame].cels[project.current_layer]
+	var cel: RefCounted = project.frames[project.current_frame].cels[project.current_layer]
 	var image: Image = cel.image
 	if !cel.has_meta("VoxelDepth"):
 		return
@@ -21,7 +21,6 @@ func _draw() -> void:
 
 	var font: Font = ExtensionsApi.theme.get_theme().default_font
 	draw_set_transform(position, rotation, Vector2(0.05, 0.05))
-	image.lock()
 	for x in range(size.x):
 		for y in range(size.y):
 			if image.get_pixel(x, y).a == 0:
@@ -30,41 +29,40 @@ func _draw() -> void:
 			draw_string(
 				font, Vector2(x, y) * 20 + Vector2.DOWN * 16, depth_str, get_color(depth_array[x][y])
 			)
-	image.unlock()
 	draw_set_transform(position, rotation, scale)
 
 
 func get_color(depth: float):
 	var weight = 0
-	var color_a := Color.red
-	var color_b := Color.white
+	var color_a := Color.RED
+	var color_b := Color.WHITE
 	if depth > 0 and depth <= 5:
 		weight = (depth - 1) /5.0
-		color_a = Color.white
-		color_b = Color.blue
+		color_a = Color.WHITE
+		color_b = Color.BLUE
 
 	if depth > 5 and depth <= 10:
 		weight = (depth - 6)/25.0
-		color_a = Color.blue
-		color_b = Color.green
+		color_a = Color.BLUE
+		color_b = Color.GREEN
 
 	if depth > 10 and depth <= 15:
 		weight = (depth - 11)/25.0
-		color_a = Color.green
-		color_b = Color.yellow
+		color_a = Color.GREEN
+		color_b = Color.YELLOW
 
 	if depth > 15 and depth <= 20:
 		weight = (depth - 16)/25.0
-		color_a = Color.yellow
-		color_b = Color.orange
+		color_a = Color.YELLOW
+		color_b = Color.ORANGE
 
 	if depth > 20 and depth <= 25:
 		weight = (depth - 26)/25.0
-		color_a = Color.orange
-		color_b = Color.red
+		color_a = Color.ORANGE
+		color_b = Color.RED
 
 	# values larger than 25 onward are in red
-	return color_a.linear_interpolate(color_b, weight)
+	return color_a.lerp(color_b, weight)
 
 
 func request_deletion():

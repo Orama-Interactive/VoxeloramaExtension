@@ -7,17 +7,17 @@ var viewport_has_focus := false
 var rotate := false
 var pan := false
 var menu_item_id: int
-var depth_tool_scene: PackedScene = preload("res://src/Extensions/Voxelorama/Tools/Depth.tscn")
-var unshaded_env: Environment = preload("res://assets/environments/unshaded.tres")
-var shaded_env: Environment = preload("res://assets/environments/shaded.tres")
-var voxel_art_gen_script: GDScript = preload("res://src/Extensions/Voxelorama/VoxelArtGen.gd")
+var depth_tool_scene := "res://src/Extensions/Voxelorama/Tools/Depth.tscn"
+var unshaded_env := preload("res://assets/environments/unshaded.tres")
+var shaded_env := preload("res://assets/environments/shaded.tres")
+var voxel_art_gen_script := preload("res://src/Extensions/Voxelorama/VoxelArtGen.gd")
 
-# Only when used as a Pixelorama extension
+## Only when used as a Pixelorama extension
 var menu_item_index: int
 
-onready var voxel_art_gen: MeshInstance = find_node("VoxelArtGen")
-onready var camera: Camera = find_node("Camera")
-onready var file_dialog: FileDialog = find_node("FileDialog")
+@onready var voxel_art_gen: MeshInstance3D = find_child("VoxelArtGen")
+@onready var camera: Camera3D = find_child("Camera3D")
+@onready var file_dialog: FileDialog = find_child("FileDialog")
 
 
 func _enter_tree() -> void:
@@ -46,13 +46,13 @@ func _input(event: InputEvent) -> void:
 		voxel_art_gen.rotation.y += event.relative.x * 0.005
 
 	if pan and event is InputEventMouseMotion:
-		camera.translation.x -= event.relative.x * 0.1
-		camera.translation.y += event.relative.y * 0.1
+		camera.position.x -= event.relative.x * 0.1
+		camera.position.y += event.relative.y * 0.1
 
 	if event.is_action("zoom_in"):
-		camera.translation.z -= 1
+		camera.position.z -= 1
 	elif event.is_action("zoom_out"):
-		camera.translation.z += 1
+		camera.position.z += 1
 
 
 func _exit_tree() -> void:
@@ -75,9 +75,9 @@ func initiate_generation():
 		return
 	var first_layer: Image = voxel_art_gen.layer_images[0].image
 	if first_layer:
-		camera.translation.y = first_layer.get_size().y / 8
-		camera.translation.x = first_layer.get_size().x / 8
-		camera.translation.z = max(first_layer.get_size().x, first_layer.get_size().y)
+		camera.position.y = first_layer.get_size().y / 8
+		camera.position.x = first_layer.get_size().x / 8
+		camera.position.z = max(first_layer.get_size().x, first_layer.get_size().y)
 
 	var project = ExtensionsApi.project.get_current_project()
 	var global = ExtensionsApi.general.get_global()
@@ -98,7 +98,7 @@ func generate() -> void:
 				image = Image.new()
 				for j in project.frames.size():
 					var frame_image := Image.new()
-					var cel2: Reference = project.frames[j].cels[i]
+					var cel2: RefCounted = project.frames[j].cels[i]
 					frame_image.copy_from(cel2.image)
 					if j == 0:
 						image = frame_image

@@ -1,26 +1,26 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://dd7sl2gqjeyo0"]
 
-[ext_resource path="res://src/Extensions/Voxelorama/VoxelArtGen.gd" type="Script" id=1]
-[ext_resource path="res://src/Extensions/Voxelorama/axes.gd" type="Script" id=2]
+[ext_resource type="Script" path="res://src/Extensions/Voxelorama/VoxelArtGen.gd" id="1"]
+[ext_resource type="Script" path="res://src/Extensions/Voxelorama/axes.gd" id="2"]
 
-[sub_resource type="ProceduralSky" id=1]
+[sub_resource type="Sky" id="1"]
 
-[sub_resource type="Environment" id=2]
+[sub_resource type="Environment" id="2"]
 background_mode = 2
-background_sky = SubResource( 1 )
+sky = SubResource("1")
 
-[node name="VoxeloramaPreview" type="Spatial"]
+[node name="VoxeloramaPreview" type="Node3D"]
 
-[node name="Camera" type="Camera" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2.47662, 3.90819, 8.02567 )
-environment = SubResource( 2 )
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.47662, 3.90819, 8.02567)
+environment = SubResource("2")
 current = true
 far = 373.6
 
-[node name="MeshParent" type="Spatial" parent="."]
+[node name="MeshParent" type="Node3D" parent="."]
 
-[node name="VoxelArtGen" type="MeshInstance" parent="MeshParent"]
-script = ExtResource( 1 )
+[node name="VoxelArtGen" type="MeshInstance3D" parent="MeshParent"]
+script = ExtResource("1")
 
-[node name="axes" type="Spatial" parent="MeshParent/VoxelArtGen"]
-script = ExtResource( 2 )
+[node name="axes" type="Node3D" parent="MeshParent/VoxelArtGen"]
+script = ExtResource("2")

@@ -8,7 +8,7 @@ var cursor_text := ""
 var _cursor := Vector2.INF
 var _depth_array := []  # 2D array
 var _depth := 1.0
-var _canvas_depth: PackedScene = preload("res://src/Extensions/Voxelorama/Tools/CanvasDepth.tscn")
+var _canvas_depth := preload("res://src/Extensions/Voxelorama/Tools/CanvasDepth.tscn")
 var _canvas_depth_node: Node2D
 
 var _canvas: Node2D
@@ -24,7 +24,7 @@ func _ready() -> void:
 			_canvas_depth_node.users += 1
 			# We will share single _canvas_depth_node
 			return
-	_canvas_depth_node = _canvas_depth.instance()
+	_canvas_depth_node = _canvas_depth.instantiate()
 	_canvas.add_child(_canvas_depth_node)
 
 
@@ -56,7 +56,7 @@ func draw_start(position: Vector2) -> void:
 	is_moving = true
 	_depth_array = []
 	var project = ExtensionsApi.project.get_current_project()
-	var cel: Reference = project.frames[project.current_frame].cels[project.current_layer]
+	var cel: RefCounted = project.frames[project.current_frame].cels[project.current_layer]
 	var image: Image = cel.image
 	if cel.has_meta("VoxelDepth"):
 		var image_depth_array: Array = cel.get_meta("VoxelDepth")
@@ -112,7 +112,7 @@ func _initialize_array(image: Image) -> void:
 			_depth_array[x].append(1)
 
 
-func _update_array(cel: Reference, position: Vector2) -> void:
+func _update_array(cel: RefCounted, position: Vector2) -> void:
 	_depth_array[position.x][position.y] = _depth
 	cel.set_meta("VoxelDepth", _depth_array)
 	_canvas_depth_node.update()

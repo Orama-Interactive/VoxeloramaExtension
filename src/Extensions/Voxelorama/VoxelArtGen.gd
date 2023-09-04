@@ -1,22 +1,22 @@
-extends MeshInstance
+extends MeshInstance3D
 
 var cubes := []  # Array of Cube(s)
 var layer_images := []  # Array of DepthImage
 var transparent_material := false
 var mesh_scale := 1.0
 
-onready var camera: Camera = $"../../Camera"
+@onready var camera: Camera3D = $"../../Camera3D"
 
 
 class Cube:
 	var start_point := Vector2.ZERO
 	var end_point := Vector2.ONE
 	var faces := []
-	var uvs := PoolVector2Array([Vector2.ZERO, Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)])
-	var uvs_right := PoolVector2Array([])
-	var uvs_left := PoolVector2Array([])
-	var uvs_down := PoolVector2Array([])
-	var uvs_up := PoolVector2Array([])
+	var uvs := PackedVector2Array([Vector2.ZERO, Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)])
+	var uvs_right := PackedVector2Array([])
+	var uvs_left := PackedVector2Array([])
+	var uvs_down := PackedVector2Array([])
+	var uvs_up := PackedVector2Array([])
 	var depth := 1.0
 	var z_back := 0.0
 	var z_front := z_back + depth
@@ -146,7 +146,7 @@ class Cube:
 				draw_block_face(st, face, uvs)
 
 	# https://github.com/godotengine/godot-demo-projects/blob/3.3-f9333dc/3d/voxel/world/chunk.gd#L171
-	func draw_block_face(surface_tool: SurfaceTool, verts, _uvs: PoolVector2Array):
+	func draw_block_face(surface_tool: SurfaceTool, verts, _uvs: PackedVector2Array):
 		var direction: Vector3 = verts[4]
 #		_uvs = [Vector2.ZERO, Vector2(1, 0), Vector2(1, 1), Vector2(0, 1)]
 		if direction == Vector3.BACK or direction == Vector3.DOWN or direction == Vector3.RIGHT:
@@ -188,7 +188,7 @@ class DepthImage:
 		depth_data = _depth_data
 
 	func depth_data_valid() -> bool:
-		if depth_data.empty():
+		if depth_data.is_empty():
 			return false
 
 		var n_array_pixels: int = depth_data.size() * depth_data[0].size()
@@ -197,7 +197,7 @@ class DepthImage:
 
 
 func generate_mesh(status :RichTextLabel, centered := true, symmetrical := false) -> void:
-	var start := OS.get_ticks_msec()
+	var start := Time.get_ticks_msec()
 	var array_mesh := ArrayMesh.new()
 	var i := 0
 	var layer_depth := 0
@@ -229,7 +229,7 @@ func generate_mesh(status :RichTextLabel, centered := true, symmetrical := false
 			for x in depth_array.size():
 				for y in depth_array[x].size():
 					var inverted_y = image.get_size().y - 1 - y
-					if depth_array[x][y] == 1 or !alpha_map.get_bit(Vector2(x, inverted_y)):
+					if depth_array[x][y] == 1 or !alpha_map.get_bitv(Vector2(x, inverted_y)):
 						continue
 
 					var depth: float = depth_array[x][y] - 1.0
@@ -249,10 +249,9 @@ func generate_mesh(status :RichTextLabel, centered := true, symmetrical := false
 
 		st.generate_normals()
 #		st.index()
-		array_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, st.commit_to_arrays(), [], 256)
-		var image_texture := ImageTexture.new()
-		image_texture.create_from_image(image, 0)
-		var mat := SpatialMaterial.new()
+		array_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, st.commit_to_arrays(), [], {}, 256)
+		var image_texture := ImageTexture.create_from_image(image)
+		var mat := StandardMaterial3D.new()
 		mat.flags_transparent = transparent_material
 		mat.albedo_texture = image_texture
 		array_mesh.surface_set_material(i, mat)
@@ -264,7 +263,7 @@ func generate_mesh(status :RichTextLabel, centered := true, symmetrical := false
 
 	# Commit to a mesh.
 	mesh = array_mesh
-	var end := OS.get_ticks_msec()
+	var end := Time.get_ticks_msec()
 	status.text += str("Mesh generated in ", end - start, " ms" + "\n")
 
 
@@ -281,7 +280,7 @@ func _find_rectangles_in_bitmap(bitmap: BitMap) -> Array:
 		var found_corner := false
 		for i in width:
 			for j in height:
-				if bitmap.get_bit(Vector2(i, j)):
+				if bitmap.get_bitv(Vector2i(i, j)):
 					rect[0] = i
 					rect[1] = j
 					found_corner = true
@@ -291,12 +290,12 @@ func _find_rectangles_in_bitmap(bitmap: BitMap) -> Array:
 
 		# Find bottom right corner
 		for i in range(rect[0], rect[2] + 1):
-			if !bitmap.get_bit(Vector2(i, rect[1])):
+			if !bitmap.get_bitv(Vector2(i, rect[1])):
 				rect[2] = i - 1
 				break
 
 			for j in range(rect[1], rect[3] + 1):
-				if !bitmap.get_bit(Vector2(i, j)):
+				if !bitmap.get_bitv(Vector2(i, j)):
 					rect[3] = j - 1
 					break
 
@@ -322,18 +321,17 @@ func _create_cube(rect: Rect2, z_back: float, offset := Vector2.ZERO, depth := 1
 # https://github.com/lawnjelly/GodotTweaks/blob/master/ObjExport/ObjExport.gd#L33
 # and
 # https://github.com/mohammedzero43/CSGExport-Godot/blob/master/addons/CSGExport/csgexport.gd#L48
-func export_obj(status :RichTextLabel, path := "user://test.obj") -> void:
+func export_obj(status: RichTextLabel, path := "user://test.obj") -> void:
 	if !layer_images:
 		return
-	var start := OS.get_ticks_msec()
+	var start := Time.get_ticks_msec()
 	var path_no_ext := path.get_basename()
-	var file_name: String = path_no_ext.get_file()
+	var file_name := path_no_ext.get_file()
 	var objcont := ""  # .obj content
 	var matcont := ""  # .mat content
 	var vertices_total := 0
 
 	objcont += "# Exported from Pixelorama with the Voxelorama extension, by Orama Interactive\n"
-# warning-ignore:integer_division
 	objcont += "# Number of triangles: " + str(mesh.get_faces().size() / 3) + "\n"
 
 	objcont += "mtllib " + file_name + ".mtl\n"
@@ -422,23 +420,19 @@ func export_obj(status :RichTextLabel, path := "user://test.obj") -> void:
 			var image_filename: String = path_no_ext + "_%s.png" % s
 			var error_texture = img_texture.save_png(image_filename)
 			if error_texture != OK:
-				status.text = str("Texture Error, Code:", error_texture)
+				status.text = str("Texture2D Error, Code:", error_texture)
 			matcont += "map_Kd " + file_name + "_%s.png\n" % s
 
-	var fi := File.new()
-# warning-ignore:return_value_discarded
-	fi.open(path, File.WRITE)
+	var fi := FileAccess.open(path, FileAccess.WRITE)
 	fi.store_string(objcont)
 	fi.close()
 
-	var mtlfile := File.new()
-# warning-ignore:return_value_discarded
-	mtlfile.open(path_no_ext + ".mtl", File.WRITE)
+	var mtlfile := FileAccess.open(path_no_ext + ".mtl", FileAccess.WRITE)
 	mtlfile.store_string(matcont)
 	mtlfile.close()
 
 	# Output message
-	var end := OS.get_ticks_msec()
+	var end := Time.get_ticks_msec()
 	status.text += str("Mesh ", path, " exported in ", end - start, " ms" + "\n")
 
 
@@ -464,7 +458,6 @@ func export_svg(path := "user://test.svg") -> void:  # WIP
 	for depth_image in layer_images:
 		var image := Image.new()
 		image.copy_from(depth_image.image)
-		image.lock()
 		for x in image.get_width():
 			for y in image.get_height():
 				var color := image.get_pixel(x, y)
@@ -481,11 +474,9 @@ func export_svg(path := "user://test.svg") -> void:  # WIP
 						color.to_html(false)
 					]
 				)
-		image.unlock()
 
 	xml += "</svg>"
-	var file: File = File.new()
-	var err := file.open(path, File.WRITE)
-	if err == OK:
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if FileAccess.get_open_error() == OK:
 		file.store_string(xml)
 		file.close()
