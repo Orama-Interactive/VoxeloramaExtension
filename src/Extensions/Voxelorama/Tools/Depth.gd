@@ -13,6 +13,7 @@ var _canvas_depth_node: Node2D
 
 var _canvas: Node2D
 
+
 func _ready() -> void:
 	kname = name.replace(" ", "_").to_lower()
 	load_config()
@@ -115,7 +116,7 @@ func _initialize_array(image: Image) -> void:
 func _update_array(cel: RefCounted, position: Vector2) -> void:
 	_depth_array[position.x][position.y] = _depth
 	cel.set_meta("VoxelDepth", _depth_array)
-	_canvas_depth_node.update()
+	_canvas_depth_node.queue_redraw()
 
 
 func _on_DepthHSlider_value_changed(value: float) -> void:

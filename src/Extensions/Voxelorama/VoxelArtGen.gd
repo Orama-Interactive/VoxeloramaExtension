@@ -196,7 +196,7 @@ class DepthImage:
 		return n_array_pixels == n_image_pixels
 
 
-func generate_mesh(status :RichTextLabel, centered := true, symmetrical := false) -> void:
+func generate_mesh(status: RichTextLabel, centered := true, symmetrical := false) -> void:
 	var start := Time.get_ticks_msec()
 	var array_mesh := ArrayMesh.new()
 	var i := 0
@@ -249,7 +249,9 @@ func generate_mesh(status :RichTextLabel, centered := true, symmetrical := false
 
 		st.generate_normals()
 #		st.index()
-		array_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, st.commit_to_arrays(), [], {}, 256)
+		array_mesh.add_surface_from_arrays(
+			Mesh.PRIMITIVE_TRIANGLES, st.commit_to_arrays(), [], {}, 256
+		)
 		var image_texture := ImageTexture.create_from_image(image)
 		var mat := StandardMaterial3D.new()
 		mat.flags_transparent = transparent_material
@@ -406,8 +408,7 @@ func export_obj(status: RichTextLabel, path := "user://test.obj") -> void:
 
 		matcont += str("newmtl " + str(mat)) + "\n"
 		matcont += (
-			str("Kd ", mat.albedo_color.r, " ", mat.albedo_color.g, " ", mat.albedo_color.b)
-			+ "\n"
+			str("Kd ", mat.albedo_color.r, " ", mat.albedo_color.g, " ", mat.albedo_color.b) + "\n"
 		)
 		matcont += str("Ke ", mat.emission.r, " ", mat.emission.g, " ", mat.emission.b) + "\n"
 		matcont += str("d ", mat.albedo_color.a) + "\n"

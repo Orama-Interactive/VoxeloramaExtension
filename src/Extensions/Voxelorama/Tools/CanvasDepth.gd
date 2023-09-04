@@ -1,8 +1,7 @@
 extends Node2D
 
-var _voxelorama_root_node: Node
-
 var users := 1
+var _voxelorama_root_node: Node
 
 
 func _ready() -> void:
@@ -27,7 +26,10 @@ func _draw() -> void:
 				continue
 			var depth_str := str(depth_array[x][y])
 			draw_string(
-				font, Vector2(x, y) * 20 + Vector2.DOWN * 16, depth_str, get_color(depth_array[x][y])
+				font,
+				Vector2(x, y) * 20 + Vector2.DOWN * 16,
+				depth_str,
+				get_color(depth_array[x][y])
 			)
 	draw_set_transform(position, rotation, scale)
 
@@ -37,27 +39,27 @@ func get_color(depth: float):
 	var color_a := Color.RED
 	var color_b := Color.WHITE
 	if depth > 0 and depth <= 5:
-		weight = (depth - 1) /5.0
+		weight = (depth - 1) / 5.0
 		color_a = Color.WHITE
 		color_b = Color.BLUE
 
 	if depth > 5 and depth <= 10:
-		weight = (depth - 6)/25.0
+		weight = (depth - 6) / 25.0
 		color_a = Color.BLUE
 		color_b = Color.GREEN
 
 	if depth > 10 and depth <= 15:
-		weight = (depth - 11)/25.0
+		weight = (depth - 11) / 25.0
 		color_a = Color.GREEN
 		color_b = Color.YELLOW
 
 	if depth > 15 and depth <= 20:
-		weight = (depth - 16)/25.0
+		weight = (depth - 16) / 25.0
 		color_a = Color.YELLOW
 		color_b = Color.ORANGE
 
 	if depth > 20 and depth <= 25:
-		weight = (depth - 26)/25.0
+		weight = (depth - 26) / 25.0
 		color_a = Color.ORANGE
 		color_b = Color.RED
 
@@ -67,6 +69,6 @@ func get_color(depth: float):
 
 func request_deletion():
 	users -= 1
-	if users == 0: # no one is using this node
+	if users == 0:  # no one is using this node
 		queue_free()
 	# Else there are still active tool using this node so DENIED

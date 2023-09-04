@@ -1,13 +1,13 @@
 extends Node3D
 
-var _project_size: Vector2
-var _grid_size: Vector2
-
 var x_axis := MeshInstance3D.new()
 var y_axis := MeshInstance3D.new()
 var z_axis := MeshInstance3D.new()
 var plane_minor := MeshInstance3D.new()
 var plane_major := MeshInstance3D.new()
+
+var _project_size: Vector2
+var _grid_size: Vector2
 
 
 func _ready():
@@ -23,7 +23,7 @@ func _ready():
 	add_child(plane_major)
 
 
-func draw_grid_and_axes(project_size :Vector2 ,grid_size :Vector2):
+func draw_grid_and_axes(project_size: Vector2, grid_size: Vector2):
 	if _project_size != project_size or _grid_size != grid_size:
 		draw_axes()
 		# Pixel Grid (Minor)
@@ -45,16 +45,16 @@ func draw_axes():
 	z_axis.material_override = StandardMaterial3D.new()
 	z_axis.material_override.albedo_color = Color(0.305882, 0.392157, 0.788235)
 	x_axis.mesh.surface_begin(Mesh.PRIMITIVE_LINES)
-	x_axis.mesh.surface_add_vertex(Vector3(-1000000,0,0))
-	x_axis.mesh.surface_add_vertex(Vector3(10000,0,0))
+	x_axis.mesh.surface_add_vertex(Vector3(-1000000, 0, 0))
+	x_axis.mesh.surface_add_vertex(Vector3(10000, 0, 0))
 	x_axis.mesh.surface_end()
 	y_axis.mesh.surface_begin(Mesh.PRIMITIVE_LINES)
-	y_axis.mesh.surface_add_vertex(Vector3(0,-10000,0))
-	y_axis.mesh.surface_add_vertex(Vector3(0,10000,0))
+	y_axis.mesh.surface_add_vertex(Vector3(0, -10000, 0))
+	y_axis.mesh.surface_add_vertex(Vector3(0, 10000, 0))
 	y_axis.mesh.surface_end()
 	z_axis.mesh.surface_begin(Mesh.PRIMITIVE_LINES)
-	z_axis.mesh.surface_add_vertex(Vector3(0,0,-10000))
-	z_axis.mesh.surface_add_vertex(Vector3(0,0,10000))
+	z_axis.mesh.surface_add_vertex(Vector3(0, 0, -10000))
+	z_axis.mesh.surface_add_vertex(Vector3(0, 0, 10000))
 	z_axis.mesh.surface_end()
 
 
@@ -70,7 +70,7 @@ func draw_grid(size: Vector2, step: Vector2, breaking: Vector2, color, major := 
 	plane.mesh.surface_begin(Mesh.PRIMITIVE_LINES)
 	var x := 0.0
 	while x <= size.x:
-		var i :float = x/breaking.x
+		var i: float = x / breaking.x
 		# if i is float or negative
 		if "." in str(i) or "-" in str(i):
 			if x == 0:
