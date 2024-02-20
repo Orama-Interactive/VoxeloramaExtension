@@ -117,11 +117,12 @@ class ToolAPI:
 	func add_tool(
 		tool_name: String,
 		display_name: String,
-		shortcut: String,
 		scene: String,
+		layer_types: PackedInt32Array = [],
 		extra_hint := "",
-		extra_shortucts := [],
-		layer_types: PackedInt32Array = []
+		shortcut: String = "",
+		extra_shortcuts: PackedStringArray = [],
+		insert_point := -1
 	) -> void:
 		# Adds a tool with the above detail
 		pass
@@ -133,9 +134,7 @@ class ToolAPI:
 
 
 class ProjectAPI:
-	func get_current_project():
-		# Returns the current project (type: Project)
-		pass
+	var current_project
 
 	func get_current_cel_info() -> Dictionary:
 		# As there are more than one types of cel in Pixelorama,

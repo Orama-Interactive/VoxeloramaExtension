@@ -56,7 +56,7 @@ func update_config() -> void:
 func draw_start(position: Vector2) -> void:
 	is_moving = true
 	_depth_array = []
-	var project = ExtensionsApi.project.get_current_project()
+	var project = ExtensionsApi.project.current_project
 	var cel: RefCounted = project.frames[project.current_frame].cels[project.current_layer]
 	var image: Image = cel.image
 	if cel.has_meta("VoxelDepth"):
@@ -78,14 +78,14 @@ func draw_move(position: Vector2) -> void:
 	# while using another tool
 	if !is_moving:
 		draw_start(position)
-	var project = ExtensionsApi.project.get_current_project()
+	var project = ExtensionsApi.project.current_project
 	var cel = project.frames[project.current_frame].cels[project.current_layer]
 	_update_array(cel, position)
 
 
 func draw_end(position: Vector2) -> void:
 	is_moving = false
-	var project = ExtensionsApi.project.get_current_project()
+	var project = ExtensionsApi.project.current_project
 	var cel = project.frames[project.current_frame].cels[project.current_layer]
 	_update_array(cel, position)
 

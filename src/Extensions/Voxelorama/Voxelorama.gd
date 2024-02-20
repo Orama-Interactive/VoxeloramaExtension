@@ -22,7 +22,7 @@ var menu_item_index: int
 
 func _enter_tree() -> void:
 	menu_item_index = ExtensionsApi.menu.add_menu_item(ExtensionsApi.menu.IMAGE, "Voxelorama", self)
-	ExtensionsApi.tools.add_tool("Depth", "Depth", "depth", depth_tool_scene)
+	ExtensionsApi.tools.add_tool("Depth", "Depth", depth_tool_scene)
 
 
 func _input(event: InputEvent) -> void:
@@ -79,7 +79,7 @@ func initiate_generation():
 		camera.position.x = first_layer.get_size().x / 8
 		camera.position.z = max(first_layer.get_size().x, first_layer.get_size().y)
 
-	var project = ExtensionsApi.project.get_current_project()
+	var project = ExtensionsApi.project.current_project
 	var global = ExtensionsApi.general.get_global()
 	voxel_art_gen.get_child(0).draw_grid_and_axes(
 		project.size * voxel_art_gen.mesh_scale, global.grid_size
@@ -88,7 +88,7 @@ func initiate_generation():
 
 func generate() -> void:
 	voxel_art_gen.layer_images.clear()
-	var project = ExtensionsApi.project.get_current_project()
+	var project = ExtensionsApi.project.current_project
 	var i := 0
 	for cel in project.frames[project.current_frame].cels:
 		if project.layers[i].visible:

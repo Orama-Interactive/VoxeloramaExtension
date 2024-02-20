@@ -268,6 +268,7 @@ func generate_mesh(status: RichTextLabel, centered := true, symmetrical := false
 		)
 		var image_texture := ImageTexture.create_from_image(image)
 		var mat := StandardMaterial3D.new()
+		mat.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
 		mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA if transparent_material else 0
 		mat.albedo_texture = image_texture
 		array_mesh.surface_set_material(i, mat)

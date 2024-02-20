@@ -10,7 +10,7 @@ func _ready() -> void:
 
 
 func _draw() -> void:
-	var project = ExtensionsApi.project.get_current_project()
+	var project = ExtensionsApi.project.current_project
 	var size: Vector2i = project.size
 	var cel: RefCounted = project.frames[project.current_frame].cels[project.current_layer]
 	var image: Image = cel.image

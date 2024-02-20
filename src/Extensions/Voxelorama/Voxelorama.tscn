@@ -6,6 +6,7 @@
 [node name="Voxelorama" type="AcceptDialog"]
 size = Vector2i(800, 700)
 exclusive = false
+popup_window = true
 script = ExtResource("1")
 
 [node name="VBoxContainer" type="HBoxContainer" parent="."]
@@ -15,7 +16,7 @@ anchor_bottom = 1.0
 offset_left = 8.0
 offset_top = 8.0
 offset_right = -8.0
-offset_bottom = -36.0
+offset_bottom = -49.0
 
 [node name="ViewportAndStatus" type="VBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -46,7 +47,7 @@ stretch = true
 [node name="SubViewport" type="SubViewport" parent="VBoxContainer/ViewportAndStatus/Panel/SubViewportContainer"]
 transparent_bg = true
 handle_input_locally = false
-size = Vector2i(2, 2)
+size = Vector2i(572, 450)
 render_target_update_mode = 0
 
 [node name="VoxeloramaPreview" parent="VBoxContainer/ViewportAndStatus/Panel/SubViewportContainer/SubViewport" instance=ExtResource("2")]
