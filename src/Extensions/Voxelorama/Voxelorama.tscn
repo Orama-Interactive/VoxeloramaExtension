@@ -47,7 +47,7 @@ stretch = true
 [node name="SubViewport" type="SubViewport" parent="VBoxContainer/ViewportAndStatus/Panel/SubViewportContainer"]
 transparent_bg = true
 handle_input_locally = false
-size = Vector2i(572, 450)
+size = Vector2i(2, 2)
 render_target_update_mode = 0
 
 [node name="VoxeloramaPreview" parent="VBoxContainer/ViewportAndStatus/Panel/SubViewportContainer/SubViewport" instance=ExtResource("2")]
@@ -107,33 +107,12 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="ScaleHBox" type="HBoxContainer" parent="VBoxContainer/Options"]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="Label" type="Label" parent="VBoxContainer/Options/ScaleHBox"]
 layout_mode = 2
 text = "Scale:"
-
-[node name="ScaleSlider" type="HSlider" parent="VBoxContainer/Options/ScaleHBox"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 4
-mouse_default_cursor_shape = 2
-min_value = 0.1
-max_value = 10.0
-step = 0.1
-value = 1.0
-allow_greater = true
-
-[node name="ScaleSpinBox" type="SpinBox" parent="VBoxContainer/Options/ScaleHBox"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_default_cursor_shape = 2
-min_value = 0.1
-max_value = 10.0
-step = 0.1
-value = 1.0
-allow_greater = true
 
 [node name="FlagsHeader" type="HBoxContainer" parent="VBoxContainer/Options"]
 layout_mode = 2
@@ -191,9 +170,10 @@ layout_mode = 2
 mouse_default_cursor_shape = 2
 text = "Export"
 
-[node name="FileDialog" type="FileDialog" parent="."]
+[node name="FileDialog" type="FileDialog" parent="." groups=["FileDialogs"]]
+size = Vector2i(677, 300)
 access = 2
-filters = PackedStringArray("*.obj", "*.svg")
+filters = PackedStringArray("*.obj")
 show_hidden_files = true
 
 [connection signal="about_to_popup" from="." to="." method="_on_Voxelorama_about_to_show"]
@@ -201,8 +181,6 @@ show_hidden_files = true
 [connection signal="mouse_entered" from="VBoxContainer/ViewportAndStatus/Panel/SubViewportContainer" to="." method="_on_ViewportContainer_mouse_entered"]
 [connection signal="mouse_exited" from="VBoxContainer/ViewportAndStatus/Panel/SubViewportContainer" to="." method="_on_ViewportContainer_mouse_exited"]
 [connection signal="toggled" from="VBoxContainer/ViewportAndStatus/ShadedPreview" to="." method="_on_ShadedPreview_toggled"]
-[connection signal="value_changed" from="VBoxContainer/Options/ScaleHBox/ScaleSlider" to="." method="_on_Scale_value_changed"]
-[connection signal="value_changed" from="VBoxContainer/Options/ScaleHBox/ScaleSpinBox" to="." method="_on_Scale_value_changed"]
 [connection signal="toggled" from="VBoxContainer/Options/Flags/VBoxContainer/Centered" to="." method="_on_Centered_toggled"]
 [connection signal="toggled" from="VBoxContainer/Options/Flags/VBoxContainer/Symmetrical" to="." method="_on_Symmetrical_toggled"]
 [connection signal="toggled" from="VBoxContainer/Options/Flags/VBoxContainer/MergeFrames" to="." method="_on_MergeFrames_toggled"]

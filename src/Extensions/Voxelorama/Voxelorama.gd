@@ -11,18 +11,34 @@ var depth_tool_scene := "res://src/Extensions/Voxelorama/Tools/Depth.tscn"
 var unshaded_env := preload("res://assets/environments/unshaded.tres")
 var shaded_env := preload("res://assets/environments/shaded.tres")
 var voxel_art_gen_script := preload("res://src/Extensions/Voxelorama/VoxelArtGen.gd")
+var scale_slider: TextureProgressBar
 
 ## Only when used as a Pixelorama extension
 var menu_item_index: int
 
 @onready var voxel_art_gen: MeshInstance3D = find_child("VoxelArtGen")
-@onready var camera: Camera3D = find_child("Camera3D")
+@onready var camera: Camera3D = voxel_art_gen.camera
 @onready var file_dialog: FileDialog = find_child("FileDialog")
 
 
 func _enter_tree() -> void:
 	menu_item_index = ExtensionsApi.menu.add_menu_item(ExtensionsApi.menu.IMAGE, "Voxelorama", self)
 	ExtensionsApi.tools.add_tool("Depth", "Depth", depth_tool_scene)
+
+
+func _ready() -> void:
+	$FileDialog.use_native_dialog = ExtensionsApi.general.get_global().use_native_file_dialogs
+	scale_slider = ExtensionsApi.general.create_value_slider()
+	scale_slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scale_slider.custom_minimum_size.y = 24
+	scale_slider.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	scale_slider.value_changed.connect(_on_scale_value_changed)
+	scale_slider.min_value = 0.1
+	scale_slider.max_value = 10
+	scale_slider.step = 0.1
+	scale_slider.allow_greater = true
+	scale_slider.value = 1
+	%ScaleHBox.add_child(scale_slider)
 
 
 func _input(event: InputEvent) -> void:
@@ -69,15 +85,15 @@ func _on_Voxelorama_about_to_show():
 	initiate_generation()
 
 
-func initiate_generation():
+func initiate_generation() -> void:
 	generate()
 	if voxel_art_gen.layer_images.size() == 0:
 		return
 	var first_layer: Image = voxel_art_gen.layer_images[0].image
 	if first_layer:
-		camera.position.y = first_layer.get_size().y / 8
-		camera.position.x = first_layer.get_size().x / 8
-		camera.position.z = max(first_layer.get_size().x, first_layer.get_size().y)
+		camera.position.y = first_layer.get_size().y / 8.0
+		camera.position.x = first_layer.get_size().x / 8.0
+		camera.position.z = maxf(first_layer.get_size().x, first_layer.get_size().y)
 
 	var project = ExtensionsApi.project.current_project
 	var global = ExtensionsApi.general.get_global()
@@ -134,10 +150,8 @@ func _on_ViewportContainer_mouse_exited() -> void:
 	viewport_has_focus = false
 
 
-func _on_Scale_value_changed(value: float) -> void:
+func _on_scale_value_changed(value: float) -> void:
 	voxel_art_gen.mesh_scale = value
-	$"%ScaleSlider".value = value
-	$"%ScaleSpinBox".value = value
 
 
 func _on_FileDialog_file_selected(path: String) -> void:
