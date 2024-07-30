@@ -52,10 +52,10 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_released("left_mouse"):
 		rotate = false
 
-	## also make use of Space key from ui_select for panning.
-	if event.is_action_pressed("middle_mouse") or event.is_action_pressed("ui_select"):
+	## pan is an action located in pixelorama's inputmap.
+	if event.is_action_pressed("middle_mouse") or event.is_action_pressed("pan"):
 		pan = true
-	elif event.is_action_released("middle_mouse") or event.is_action_released("ui_select"):
+	elif event.is_action_released("middle_mouse") or event.is_action_released("pan"):
 		pan = false
 
 	if rotate and event is InputEventMouseMotion:
