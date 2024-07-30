@@ -1,5 +1,6 @@
 extends "res://src/Tools/BaseDraw.gd"
 
+var _last_position := Vector2i(Vector2.INF)
 var _depth_slider: TextureProgressBar
 var _depth_array: Array[PackedFloat32Array] = []
 var _depth := 1.0
@@ -20,13 +21,17 @@ func _ready() -> void:
 	_depth_slider.value = 1
 	_depth_slider.prefix = "Depth:"
 	_depth_slider.allow_greater = true
+	var _undo_label = Label.new()
+	_undo_label.text = "Please note that Undo/Redo will not work for this tool"
+	_undo_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_undo_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	add_child(_depth_slider)
+	add_child(_undo_label)
 	kname = name.replace(" ", "_").to_lower()
 	if tool_slot.name == "Left tool":
 		$ColorRect.color = ExtensionsApi.general.get_global().left_tool_color
 	else:
 		$ColorRect.color = ExtensionsApi.general.get_global().right_tool_color
-	load_config()
 
 	_canvas = ExtensionsApi.general.get_canvas()
 	for child in _canvas.get_children():
@@ -37,6 +42,7 @@ func _ready() -> void:
 			return
 	_canvas_depth_node = _canvas_depth.instantiate()
 	_canvas.add_child(_canvas_depth_node)
+	super._ready()
 
 
 func save_config() -> void:
@@ -84,6 +90,7 @@ func draw_start(pos: Vector2i) -> void:
 	else:
 		_initialize_array(image)
 	_update_array(cel, pos)
+	_last_position = pos
 
 
 func draw_move(pos: Vector2i) -> void:
@@ -93,7 +100,8 @@ func draw_move(pos: Vector2i) -> void:
 		draw_start(pos)
 	var project = ExtensionsApi.project.current_project
 	var cel = project.frames[project.current_frame].cels[project.current_layer]
-	_update_array(cel, pos)
+	fill_gap(cel, _last_position, pos)
+	_last_position = pos
 
 
 func draw_end(pos: Vector2i) -> void:
@@ -175,3 +183,25 @@ func _compute_draw_tool_brush(pos: Vector2i) -> Array[Vector2i]:
 func _on_color_interpolation_visibility_changed() -> void:
 	if $ColorInterpolation.visible:
 		$ColorInterpolation.visible = false
+
+
+# Bresenham's Algorithm
+# Thanks to https://godotengine.org/qa/35276/tile-based-line-drawing-algorithm-efficiency
+func fill_gap(cel, start: Vector2i, end: Vector2i) -> void:
+	var dx := absi(end.x - start.x)
+	var dy := -absi(end.y - start.y)
+	var err := dx + dy
+	var e2 := err << 1
+	var sx := 1 if start.x < end.x else -1
+	var sy := 1 if start.y < end.y else -1
+	var x := start.x
+	var y := start.y
+	while !(x == end.x && y == end.y):
+		e2 = err << 1
+		if e2 >= dy:
+			err += dy
+			x += sx
+		if e2 <= dx:
+			err += dx
+			y += sy
+		_update_array(cel, Vector2i(x, y))

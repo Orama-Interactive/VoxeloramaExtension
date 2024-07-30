@@ -21,3 +21,7 @@ var _spacing := Vector2i.ZERO  ## Spacing between two strokes
 var _stroke_dimensions := Vector2i.ONE  ## 2D vector containing _brush_size from Draw.gd
 var _spacing_offset := Vector2i.ZERO  ## The initial error between position and position.snapped()
 @onready var color_rect := $ColorRect as ColorRect
+
+
+func _ready() -> void:
+	pass
