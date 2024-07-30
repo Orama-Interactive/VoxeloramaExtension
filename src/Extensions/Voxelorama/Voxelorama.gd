@@ -52,9 +52,10 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_released("left_mouse"):
 		rotate = false
 
-	if event.is_action_pressed("middle_mouse"):
+	## pan is an action located in pixelorama's inputmap.
+	if event.is_action_pressed("middle_mouse") or event.is_action_pressed("pan"):
 		pan = true
-	elif event.is_action_released("middle_mouse"):
+	elif event.is_action_released("middle_mouse") or event.is_action_released("pan"):
 		pan = false
 
 	if rotate and event is InputEventMouseMotion:
