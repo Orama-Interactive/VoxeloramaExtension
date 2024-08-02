@@ -66,3 +66,11 @@ func _compute_draw_tool_pixel(_pos: Vector2) -> PackedVector2Array:
 func _compute_draw_tool_circle(_pos: Vector2i, _fill := false) -> Array[Vector2i]:
 	var result: Array[Vector2i] = []
 	return result
+
+
+func update_line_polylines(start: Vector2i, end: Vector2i) -> void:
+	pass
+
+
+func _line_angle_constraint(start: Vector2, end: Vector2) -> Dictionary:
+	return {}
