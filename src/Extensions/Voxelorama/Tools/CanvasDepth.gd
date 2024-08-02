@@ -16,7 +16,7 @@ func _draw() -> void:
 	var image: Image = cel.image
 	if !cel.has_meta("VoxelDepth"):
 		return
-	var depth_array: Array[PackedFloat32Array] =  Array(
+	var depth_array: Array[PackedFloat32Array] = Array(
 		cel.get_meta("VoxelDepth"), TYPE_PACKED_FLOAT32_ARRAY, "", null
 	)
 

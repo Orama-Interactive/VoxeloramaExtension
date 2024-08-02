@@ -3,7 +3,8 @@ extends "res://src/Tools/BaseDraw.gd"
 var _last_position := Vector2i(Vector2.INF)
 var _depth_slider: TextureProgressBar
 var _depth_array: Array[PackedFloat32Array] = []
-var _depth_undo_data: Array[PackedFloat32Array] = []  ## we're only using one cel so array is sufficient
+## We're only using one cel so array is sufficient.
+var _depth_undo_data: Array[PackedFloat32Array] = []
 var _depth := 1.0
 var _canvas_depth := preload("res://src/Extensions/Voxelorama/Tools/CanvasDepth.tscn")
 var _canvas_depth_node: Node2D

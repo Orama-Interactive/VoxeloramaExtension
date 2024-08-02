@@ -44,8 +44,8 @@ func _ready() -> void:
 ## This method is located here because it is the only place that doesn't get removed when we
 ## change tools.
 func update_undo_redo_canvas():
-	var _canvas = ExtensionsApi.general.get_canvas()
-	for child in _canvas.get_children():
+	var canvas = ExtensionsApi.general.get_canvas()
+	for child in canvas.get_children():
 		if child.is_in_group("CanvasDepth"):
 			child.queue_redraw()
 

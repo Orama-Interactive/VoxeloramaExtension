@@ -41,7 +41,7 @@ func get_config() -> Dictionary:
 	return {}
 
 
-func set_config(config: Dictionary) -> void:
+func set_config(_config: Dictionary) -> void:
 	return
 
 
@@ -53,16 +53,16 @@ func save_config():
 	return
 
 
-func _draw_tool(pos: Vector2) -> PackedVector2Array:
+func _draw_tool(_pos: Vector2) -> PackedVector2Array:
 	var result: Array[Vector2i] = []
 	return result
 
 
-func _compute_draw_tool_pixel(pos: Vector2) -> PackedVector2Array:
+func _compute_draw_tool_pixel(_pos: Vector2) -> PackedVector2Array:
 	var result: Array[Vector2i] = []
 	return result
 
 
-func _compute_draw_tool_circle(pos: Vector2i, fill := false) -> Array[Vector2i]:
+func _compute_draw_tool_circle(_pos: Vector2i, _fill := false) -> Array[Vector2i]:
 	var result: Array[Vector2i] = []
 	return result
