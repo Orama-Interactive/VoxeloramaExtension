@@ -18,6 +18,13 @@ func get_api_version() -> int:
 	return 2
 
 
+## Returns the initial nodes of an extension named [param extension_name].
+## initial nodes are the nodes whose paths are in the [code]nodes[/code] key of an
+## extension.json file.
+func get_main_nodes(extension_name: StringName) -> Array[Node]:
+	return []
+
+
 class GeneralAPI:
 	# Version And Config
 	func get_pixelorama_version() -> String:
