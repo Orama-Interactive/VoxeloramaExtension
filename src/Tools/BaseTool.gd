@@ -5,7 +5,7 @@ extends VBoxContainer
 
 var is_moving := false
 var kname: String
-var tool_slot = null # Tools.Slot, can't have static typing due to cyclic errors
+var tool_slot = null  # Tools.Slot, can't have static typing due to cyclic errors
 var cursor_text := ""
 var _cursor := Vector2i(Vector2.INF)
 var _stabilizer_center := Vector2.ZERO

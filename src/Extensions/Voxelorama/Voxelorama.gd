@@ -43,9 +43,9 @@ func _ready() -> void:
 
 ## This method is located here because it is the only place that doesn't get removed when we
 ## change tools.
-func update_undo_redo_canvas():
-	var _canvas = ExtensionsApi.general.get_canvas()
-	for child in _canvas.get_children():
+func update_undo_redo_canvas() -> void:
+	var canvas = ExtensionsApi.general.get_canvas()
+	for child in canvas.get_children():
 		if child.is_in_group("CanvasDepth"):
 			child.queue_redraw()
 
@@ -91,7 +91,7 @@ func menu_item_clicked() -> void:
 	ExtensionsApi.dialog.dialog_open(true)
 
 
-func _on_Voxelorama_about_to_show():
+func _on_Voxelorama_about_to_show() -> void:
 	initiate_generation()
 
 
@@ -141,7 +141,7 @@ func generate() -> void:
 					depth_data = Array(
 						cel.get_meta("VoxelDepth"), TYPE_PACKED_FLOAT32_ARRAY, "", null
 					)
-			var depth_image = voxel_art_gen_script.DepthImage.new(image, depth_data)
+			var depth_image := voxel_art_gen_script.DepthImage.new(image, depth_data)
 			voxel_art_gen.layer_images.append(depth_image)
 		i += 1
 	voxel_art_gen.generate_mesh($"%Status", centered, symmetrical)
