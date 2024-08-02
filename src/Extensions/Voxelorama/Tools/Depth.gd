@@ -3,6 +3,7 @@ extends "res://src/Tools/BaseDraw.gd"
 var _last_position := Vector2i(Vector2.INF)
 var _depth_slider: TextureProgressBar
 var _depth_array: Array[PackedFloat32Array] = []
+var _depth_undo_data: Array[PackedFloat32Array] = []  ## we're only using one cel so array is sufficient
 var _depth := 1.0
 var _canvas_depth := preload("res://src/Extensions/Voxelorama/Tools/CanvasDepth.tscn")
 var _canvas_depth_node: Node2D
@@ -21,12 +22,7 @@ func _ready() -> void:
 	_depth_slider.value = 1
 	_depth_slider.prefix = "Depth:"
 	_depth_slider.allow_greater = true
-	var _undo_label = Label.new()
-	_undo_label.text = "Please note that Undo/Redo will not work for this tool"
-	_undo_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_undo_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	add_child(_depth_slider)
-	add_child(_undo_label)
 	kname = name.replace(" ", "_").to_lower()
 	if tool_slot.name == "Left tool":
 		$ColorRect.color = ExtensionsApi.general.get_global().left_tool_color
@@ -34,6 +30,7 @@ func _ready() -> void:
 		$ColorRect.color = ExtensionsApi.general.get_global().right_tool_color
 
 	_canvas = ExtensionsApi.general.get_canvas()
+	super._ready()
 	for child in _canvas.get_children():
 		if child.is_in_group("CanvasDepth"):
 			_canvas_depth_node = child
@@ -42,7 +39,6 @@ func _ready() -> void:
 			return
 	_canvas_depth_node = _canvas_depth.instantiate()
 	_canvas.add_child(_canvas_depth_node)
-	super._ready()
 
 
 func save_config() -> void:
@@ -89,6 +85,7 @@ func draw_start(pos: Vector2i) -> void:
 			_initialize_array(image)
 	else:
 		_initialize_array(image)
+	_depth_undo_data = (cel.get_meta("VoxelDepth", _depth_array)).duplicate(true)
 	_update_array(cel, pos)
 	_last_position = pos
 
@@ -109,6 +106,25 @@ func draw_end(pos: Vector2i) -> void:
 	var project = ExtensionsApi.project.current_project
 	var cel = project.frames[project.current_frame].cels[project.current_layer]
 	_update_array(cel, pos)
+	_commit_undo(cel)
+
+
+func _commit_undo(cel) -> void:
+	var project = ExtensionsApi.project.current_project
+	var redo_data = _depth_array.duplicate(true)
+	var undo_data = _depth_undo_data.duplicate(true)
+	project.undos += 1
+	project.undo_redo.create_action("Change Depth")
+	project.undo_redo.add_do_method(cel.set_meta.bind("VoxelDepth", redo_data))
+	project.undo_redo.add_undo_method(cel.set_meta.bind("VoxelDepth", undo_data))
+	var main_nodes = ExtensionsApi.get_main_nodes("Voxelorama")
+	if main_nodes.size() > 0:
+		project.undo_redo.add_do_method(main_nodes[0].call.bind("update_undo_redo_canvas"))
+		project.undo_redo.add_undo_method(main_nodes[0].call.bind("update_undo_redo_canvas"))
+	project.undo_redo.add_do_method(ExtensionsApi.general.get_global().general_redo.bind(project))
+	project.undo_redo.add_undo_method(ExtensionsApi.general.get_global().general_undo.bind(project))
+	project.undo_redo.commit_action()
+	_depth_undo_data.clear()
 
 
 func cursor_move(pos: Vector2i) -> void:
