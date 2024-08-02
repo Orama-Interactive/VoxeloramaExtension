@@ -136,8 +136,10 @@ func generate() -> void:
 						depth_data = cel2.get_meta("VoxelDepth")
 			else:
 				if cel.has_meta("VoxelDepth"):
-					depth_data = cel.get_meta("VoxelDepth")
-			var depth_image = voxel_art_gen_script.DepthImage.new(image, depth_data)
+					depth_data = Array(
+						cel.get_meta("VoxelDepth"), TYPE_PACKED_FLOAT32_ARRAY, "", null
+					)
+			var depth_image := voxel_art_gen_script.DepthImage.new(image, depth_data)
 			voxel_art_gen.layer_images.append(depth_image)
 		i += 1
 	voxel_art_gen.generate_mesh($"%Status", centered, symmetrical)
