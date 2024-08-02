@@ -133,10 +133,14 @@ func generate() -> void:
 							frame_image, Rect2(Vector2.ZERO, image.get_size()), Vector2.ZERO
 						)
 					if cel2.has_meta("VoxelDepth"):
-						depth_data = cel2.get_meta("VoxelDepth")
+						depth_data = Array(
+							cel.get_meta("VoxelDepth"), TYPE_PACKED_FLOAT32_ARRAY, "", null
+						)
 			else:
 				if cel.has_meta("VoxelDepth"):
-					depth_data = cel.get_meta("VoxelDepth")
+					depth_data = Array(
+						cel.get_meta("VoxelDepth"), TYPE_PACKED_FLOAT32_ARRAY, "", null
+					)
 			var depth_image = voxel_art_gen_script.DepthImage.new(image, depth_data)
 			voxel_art_gen.layer_images.append(depth_image)
 		i += 1

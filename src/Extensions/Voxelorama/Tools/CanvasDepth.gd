@@ -16,7 +16,9 @@ func _draw() -> void:
 	var image: Image = cel.image
 	if !cel.has_meta("VoxelDepth"):
 		return
-	var depth_array: Array = cel.get_meta("VoxelDepth")
+	var depth_array: Array[PackedFloat32Array] = Array(
+		cel.get_meta("VoxelDepth"), TYPE_PACKED_FLOAT32_ARRAY, "", null
+	)
 
 	var font: Font = ExtensionsApi.theme.get_theme().default_font
 	draw_set_transform(position, rotation, Vector2(0.05, 0.05))
@@ -70,7 +72,7 @@ func get_color(depth: float) -> Color:
 	return color_a.lerp(color_b, weight)
 
 
-func request_deletion():
+func request_deletion() -> void:
 	users -= 1
 	if users == 0:  # no one is using this node
 		queue_free()

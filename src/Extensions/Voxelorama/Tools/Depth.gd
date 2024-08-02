@@ -4,13 +4,15 @@ var _last_position := Vector2i(Vector2.INF)
 var _fill_checkbox: CheckBox
 var _depth_slider: TextureProgressBar
 var _depth_array: Array[PackedFloat32Array] = []
-var _depth_undo_data: Array[PackedFloat32Array] = []  ## we're only using one cel so array is sufficient
+## We're only using one cel so array is sufficient.
+var _depth_undo_data: Array[PackedFloat32Array] = []
 var _depth := 1.0
 var _canvas_depth := preload("res://src/Extensions/Voxelorama/Tools/CanvasDepth.tscn")
 var _canvas_depth_node: Node2D
 var _canvas: Node2D
 var _draw_points: Array[Vector2i] = []
 var _fill_inside = false
+var _depth_modified = false
 
 
 func _ready() -> void:
@@ -73,6 +75,7 @@ func update_config() -> void:
 
 func draw_start(pos: Vector2i) -> void:
 	is_moving = true
+	_depth_modified = false
 	_depth_array = []
 	_draw_points = []
 	_depth_undo_data = []
@@ -81,8 +84,9 @@ func draw_start(pos: Vector2i) -> void:
 	var cel: RefCounted = project.frames[project.current_frame].cels[project.current_layer]
 	var image: Image = cel.image
 	if cel.has_meta("VoxelDepth"):
-		var image_depth_array: Array[PackedFloat32Array] = cel.get_meta("VoxelDepth")
-		print(image_depth_array)
+		var image_depth_array: Array[PackedFloat32Array] = Array(
+			cel.get_meta("VoxelDepth"), TYPE_PACKED_FLOAT32_ARRAY, "", null
+		).duplicate(true)
 		var n_array_pixels: int = image_depth_array.size() * image_depth_array[0].size()
 		var n_image_pixels: int = image.get_width() * image.get_height()
 
@@ -92,7 +96,10 @@ func draw_start(pos: Vector2i) -> void:
 			_initialize_array(image)
 	else:
 		_initialize_array(image)
-	_depth_undo_data = cel.get_meta("VoxelDepth", _depth_array).duplicate(true)
+	var temp_depth_array: Array[PackedFloat32Array] = Array(
+		cel.get_meta("VoxelDepth", _depth_array), TYPE_PACKED_FLOAT32_ARRAY, "", null
+	)
+	_depth_undo_data = temp_depth_array.duplicate(true)
 
 	_draw_line = Input.is_action_pressed("draw_create_line")
 	if _draw_line:
@@ -153,17 +160,16 @@ func draw_end(pos: Vector2i) -> void:
 						if Geometry2D.is_point_in_polygon(v, _draw_points):
 							_update_array(cel, v)
 	cursor_text = ""
-	_commit_undo(cel)
+	if _depth_modified:
+		_commit_undo(cel)
 
 
-func _commit_undo(cel) -> void:
+func _commit_undo(cel: RefCounted) -> void:
 	var project = ExtensionsApi.project.current_project
-	var redo_data = _depth_array
-	var undo_data = _depth_undo_data
 	project.undos += 1
 	project.undo_redo.create_action("Change Depth")
-	project.undo_redo.add_do_method(cel.set_meta.bind("VoxelDepth", redo_data))
-	project.undo_redo.add_undo_method(cel.set_meta.bind("VoxelDepth", undo_data))
+	project.undo_redo.add_do_method(cel.set_meta.bind("VoxelDepth", _depth_array.duplicate(true)))
+	project.undo_redo.add_undo_method(cel.set_meta.bind("VoxelDepth", _depth_undo_data))
 	var main_nodes = ExtensionsApi.get_main_nodes("Voxelorama")
 	if main_nodes.size() > 0:
 		project.undo_redo.add_do_method(main_nodes[0].call.bind("update_undo_redo_canvas"))
@@ -193,7 +199,9 @@ func _update_array(cel: RefCounted, pos: Vector2i) -> void:
 	var coords_to_draw := _get_depth_points(pos)
 	for coord in coords_to_draw:
 		if ExtensionsApi.project.current_project.can_pixel_get_drawn(coord):
-			_depth_array[coord.x][coord.y] = _depth
+			if _depth_array[coord.x][coord.y] != _depth:
+				_depth_array[coord.x][coord.y] = _depth
+				_depth_modified = true
 	cel.set_meta("VoxelDepth", _depth_array)
 	_canvas_depth_node.queue_redraw()
 
@@ -254,7 +262,7 @@ func _on_color_interpolation_visibility_changed() -> void:
 
 # Bresenham's Algorithm
 # Thanks to https://godotengine.org/qa/35276/tile-based-line-drawing-algorithm-efficiency
-func fill_gap(cel, start: Vector2i, end: Vector2i) -> void:
+func fill_gap(cel: RefCounted, start: Vector2i, end: Vector2i) -> void:
 	var dx := absi(end.x - start.x)
 	var dy := -absi(end.y - start.y)
 	var err := dx + dy
