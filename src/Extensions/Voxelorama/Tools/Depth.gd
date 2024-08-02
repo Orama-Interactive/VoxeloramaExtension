@@ -1,6 +1,7 @@
 extends "res://src/Tools/BaseDraw.gd"
 
 var _last_position := Vector2i(Vector2.INF)
+var _fill_checkbox: CheckBox
 var _depth_slider: TextureProgressBar
 var _depth_array: Array[PackedFloat32Array] = []
 var _depth_undo_data: Array[PackedFloat32Array] = []  ## we're only using one cel so array is sufficient
@@ -9,6 +10,7 @@ var _canvas_depth := preload("res://src/Extensions/Voxelorama/Tools/CanvasDepth.
 var _canvas_depth_node: Node2D
 var _canvas: Node2D
 var _draw_points: Array[Vector2i] = []
+var _fill_inside = false
 
 
 func _ready() -> void:
@@ -23,11 +25,9 @@ func _ready() -> void:
 	_depth_slider.prefix = "Depth:"
 	_depth_slider.allow_greater = true
 	add_child(_depth_slider)
-	kname = name.replace(" ", "_").to_lower()
-	if tool_slot.name == "Left tool":
-		$ColorRect.color = ExtensionsApi.general.get_global().left_tool_color
-	else:
-		$ColorRect.color = ExtensionsApi.general.get_global().right_tool_color
+	_fill_checkbox = CheckBox.new()
+	_fill_checkbox.toggled.connect(_on_fill_inside_toggled)
+	add_child(_fill_checkbox)
 
 	_canvas = ExtensionsApi.general.get_canvas()
 	super._ready()
@@ -55,27 +55,34 @@ func load_config() -> void:
 func get_config() -> Dictionary:
 	var config := super.get_config()
 	config["depth"] = _depth
+	config["fill_inside"] = _fill_inside
 	return config
 
 
 func set_config(config: Dictionary) -> void:
 	super.set_config(config)
 	_depth = config.get("depth", _depth)
+	_fill_inside = config.get("fill_inside", _fill_inside)
 
 
 func update_config() -> void:
 	super.update_config()
 	_depth_slider.value = _depth
+	_fill_checkbox.button_pressed = _fill_inside
 
 
 func draw_start(pos: Vector2i) -> void:
 	is_moving = true
 	_depth_array = []
+	_draw_points = []
+	_depth_undo_data = []
+
 	var project = ExtensionsApi.project.current_project
 	var cel: RefCounted = project.frames[project.current_frame].cels[project.current_layer]
 	var image: Image = cel.image
 	if cel.has_meta("VoxelDepth"):
 		var image_depth_array: Array[PackedFloat32Array] = cel.get_meta("VoxelDepth")
+		print(image_depth_array)
 		var n_array_pixels: int = image_depth_array.size() * image_depth_array[0].size()
 		var n_image_pixels: int = image.get_width() * image.get_height()
 
@@ -85,7 +92,19 @@ func draw_start(pos: Vector2i) -> void:
 			_initialize_array(image)
 	else:
 		_initialize_array(image)
-	_depth_undo_data = (cel.get_meta("VoxelDepth", _depth_array)).duplicate(true)
+	_depth_undo_data = cel.get_meta("VoxelDepth", _depth_array).duplicate(true)
+
+	_draw_line = Input.is_action_pressed("draw_create_line")
+	if _draw_line:
+		_line_start = pos
+		_line_end = pos
+		update_line_polylines(_line_start, _line_end)
+	else:
+		if _fill_inside:
+			_draw_points.append(pos)
+		_update_array(cel, pos)
+		_last_position = pos
+	cursor_text = ""
 	_update_array(cel, pos)
 	_last_position = pos
 
@@ -97,22 +116,50 @@ func draw_move(pos: Vector2i) -> void:
 		draw_start(pos)
 	var project = ExtensionsApi.project.current_project
 	var cel = project.frames[project.current_frame].cels[project.current_layer]
-	fill_gap(cel, _last_position, pos)
-	_last_position = pos
+
+	if _draw_line:
+		var dict := _line_angle_constraint(_line_start, pos)
+		if dict.has("position"):
+			_line_end = dict.position
+		if dict.has("text"):
+			cursor_text = dict.text
+		update_line_polylines(_line_start, _line_end)
+	else:
+		fill_gap(cel, _last_position, pos)
+		_last_position = pos
+		cursor_text = ""
+		if _fill_inside:
+			_draw_points.append(pos)
 
 
 func draw_end(pos: Vector2i) -> void:
 	is_moving = false
 	var project = ExtensionsApi.project.current_project
 	var cel = project.frames[project.current_frame].cels[project.current_layer]
-	_update_array(cel, pos)
+	if _draw_line:
+		_update_array(cel, pos)
+		fill_gap(cel, _line_start, _line_end)
+		_draw_line = false
+	else:
+		if _fill_inside:
+			_draw_points.append(pos)
+			if _draw_points.size() > 3:
+				var v = Vector2()
+				var map_size = ExtensionsApi.project.current_project.size
+				for x in map_size.x:
+					v.x = x
+					for y in map_size.y:
+						v.y = y
+						if Geometry2D.is_point_in_polygon(v, _draw_points):
+							_update_array(cel, v)
+	cursor_text = ""
 	_commit_undo(cel)
 
 
 func _commit_undo(cel) -> void:
 	var project = ExtensionsApi.project.current_project
-	var redo_data = _depth_array.duplicate(true)
-	var undo_data = _depth_undo_data.duplicate(true)
+	var redo_data = _depth_array
+	var undo_data = _depth_undo_data
 	project.undos += 1
 	project.undo_redo.create_action("Change Depth")
 	project.undo_redo.add_do_method(cel.set_meta.bind("VoxelDepth", redo_data))
@@ -124,7 +171,6 @@ func _commit_undo(cel) -> void:
 	project.undo_redo.add_do_method(ExtensionsApi.general.get_global().general_redo.bind(project))
 	project.undo_redo.add_undo_method(ExtensionsApi.general.get_global().general_undo.bind(project))
 	project.undo_redo.commit_action()
-	_depth_undo_data.clear()
 
 
 func cursor_move(pos: Vector2i) -> void:
@@ -158,6 +204,12 @@ func _on_depth_slider_value_changed(value: float) -> void:
 	save_config()
 
 
+func _on_fill_inside_toggled(button_pressed: bool) -> void:
+	_fill_inside = button_pressed
+	update_config()
+	save_config()
+
+
 func _exit_tree() -> void:
 	if _canvas:
 		_canvas_depth_node.request_deletion()
@@ -180,7 +232,6 @@ func _get_depth_points(pos: Vector2) -> PackedVector2Array:
 			return _compute_draw_tool_circle(pos, true)
 		_:
 			return _compute_draw_tool_brush(pos)
-	return PackedVector2Array()  # empty fallback
 
 
 func _compute_draw_tool_brush(pos: Vector2i) -> Array[Vector2i]:

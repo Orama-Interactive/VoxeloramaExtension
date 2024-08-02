@@ -25,3 +25,7 @@ var _spacing_offset := Vector2i.ZERO  ## The initial error between position and 
 
 func _ready() -> void:
 	pass
+
+
+func snap_position(position: Vector2) -> Vector2:
+	return Vector2.ZERO
