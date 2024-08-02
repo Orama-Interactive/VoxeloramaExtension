@@ -72,7 +72,7 @@ func get_color(depth: float) -> Color:
 	return color_a.lerp(color_b, weight)
 
 
-func request_deletion():
+func request_deletion() -> void:
 	users -= 1
 	if users == 0:  # no one is using this node
 		queue_free()

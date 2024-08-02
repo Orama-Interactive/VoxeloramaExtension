@@ -115,7 +115,7 @@ func draw_end(pos: Vector2i) -> void:
 	_commit_undo(cel)
 
 
-func _commit_undo(cel) -> void:
+func _commit_undo(cel: RefCounted) -> void:
 	var project = ExtensionsApi.project.current_project
 	var redo_data = _depth_array.duplicate(true)
 	var undo_data = _depth_undo_data.duplicate(true)
@@ -209,7 +209,7 @@ func _on_color_interpolation_visibility_changed() -> void:
 
 # Bresenham's Algorithm
 # Thanks to https://godotengine.org/qa/35276/tile-based-line-drawing-algorithm-efficiency
-func fill_gap(cel, start: Vector2i, end: Vector2i) -> void:
+func fill_gap(cel: RefCounted, start: Vector2i, end: Vector2i) -> void:
 	var dx := absi(end.x - start.x)
 	var dy := -absi(end.y - start.y)
 	var err := dx + dy

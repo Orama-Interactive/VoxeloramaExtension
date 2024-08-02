@@ -43,7 +43,7 @@ func _ready() -> void:
 
 ## This method is located here because it is the only place that doesn't get removed when we
 ## change tools.
-func update_undo_redo_canvas():
+func update_undo_redo_canvas() -> void:
 	var canvas = ExtensionsApi.general.get_canvas()
 	for child in canvas.get_children():
 		if child.is_in_group("CanvasDepth"):
@@ -91,7 +91,7 @@ func menu_item_clicked() -> void:
 	ExtensionsApi.dialog.dialog_open(true)
 
 
-func _on_Voxelorama_about_to_show():
+func _on_Voxelorama_about_to_show() -> void:
 	initiate_generation()
 
 
