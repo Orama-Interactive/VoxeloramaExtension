@@ -16,7 +16,9 @@ func _draw() -> void:
 	var image: Image = cel.image
 	if !cel.has_meta("VoxelDepth"):
 		return
-	var depth_array: Array = cel.get_meta("VoxelDepth")
+	var depth_array: Array[PackedFloat32Array] =  Array(
+		cel.get_meta("VoxelDepth"), TYPE_PACKED_FLOAT32_ARRAY, "", null
+	)
 
 	var font: Font = ExtensionsApi.theme.get_theme().default_font
 	draw_set_transform(position, rotation, Vector2(0.05, 0.05))

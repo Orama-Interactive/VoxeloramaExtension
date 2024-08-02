@@ -75,7 +75,9 @@ func draw_start(pos: Vector2i) -> void:
 	var cel: RefCounted = project.frames[project.current_frame].cels[project.current_layer]
 	var image: Image = cel.image
 	if cel.has_meta("VoxelDepth"):
-		var image_depth_array: Array[PackedFloat32Array] = cel.get_meta("VoxelDepth")
+		var image_depth_array: Array[PackedFloat32Array] = Array(
+			cel.get_meta("VoxelDepth"), TYPE_PACKED_FLOAT32_ARRAY, "", null
+		)
 		var n_array_pixels: int = image_depth_array.size() * image_depth_array[0].size()
 		var n_image_pixels: int = image.get_width() * image.get_height()
 
@@ -85,7 +87,10 @@ func draw_start(pos: Vector2i) -> void:
 			_initialize_array(image)
 	else:
 		_initialize_array(image)
-	_depth_undo_data = (cel.get_meta("VoxelDepth", _depth_array)).duplicate(true)
+	var temp_depth_array: Array[PackedFloat32Array] = Array(
+		cel.get_meta("VoxelDepth", _depth_array), TYPE_PACKED_FLOAT32_ARRAY, "", null
+	)
+	_depth_undo_data = temp_depth_array.duplicate(true)
 	_update_array(cel, pos)
 	_last_position = pos
 
