@@ -22,7 +22,9 @@ var menu_item_index: int
 
 
 func _enter_tree() -> void:
-	menu_item_index = ExtensionsApi.menu.add_menu_item(ExtensionsApi.menu.IMAGE, "Voxelorama", self)
+	menu_item_index = ExtensionsApi.menu.add_menu_item(
+		ExtensionsApi.menu.EFFECTS, "Voxelorama", self
+	)
 	ExtensionsApi.tools.add_tool("Depth", "Depth", depth_tool_scene)
 
 
@@ -82,7 +84,7 @@ func _input(event: InputEvent) -> void:
 
 
 func _exit_tree() -> void:
-	ExtensionsApi.menu.remove_menu_item(ExtensionsApi.menu.IMAGE, menu_item_index)
+	ExtensionsApi.menu.remove_menu_item(ExtensionsApi.menu.EFFECTS, menu_item_index)
 	ExtensionsApi.tools.remove_tool("Depth")
 
 
@@ -107,8 +109,13 @@ func initiate_generation() -> void:
 
 	var project = ExtensionsApi.project.current_project
 	var global = ExtensionsApi.general.get_global()
+	var grid_size := Vector2(2, 2)
+	if ExtensionsApi.get_api_version() < 6:
+		grid_size = global.grid_size
+	else:
+		grid_size = global.grids[0].grid_size
 	voxel_art_gen.get_child(0).draw_grid_and_axes(
-		project.size * voxel_art_gen.mesh_scale, global.grid_size
+		project.size * voxel_art_gen.mesh_scale, grid_size
 	)
 
 
