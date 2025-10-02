@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://d0uixtmp37u3h"]
 
-[ext_resource type="Script" path="res://src/Extensions/Voxelorama/Voxelorama.gd" id="1"]
+[ext_resource type="Script" uid="uid://bushs4ilvvrmj" path="res://src/Extensions/Voxelorama/Voxelorama.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://dd7sl2gqjeyo0" path="res://src/Extensions/Voxelorama/VoxeloramaPreview.tscn" id="2"]
 
 [node name="Voxelorama" type="AcceptDialog"]
@@ -47,7 +47,7 @@ stretch = true
 [node name="SubViewport" type="SubViewport" parent="VBoxContainer/ViewportAndStatus/Panel/SubViewportContainer"]
 transparent_bg = true
 handle_input_locally = false
-size = Vector2i(472, 250)
+size = Vector2i(2, 2)
 render_target_update_mode = 0
 
 [node name="VoxeloramaPreview" parent="VBoxContainer/ViewportAndStatus/Panel/SubViewportContainer/SubViewport" instance=ExtResource("2")]
