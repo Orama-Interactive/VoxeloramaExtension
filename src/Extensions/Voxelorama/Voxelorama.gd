@@ -89,7 +89,7 @@ func _exit_tree() -> void:
 
 
 func menu_item_clicked() -> void:
-	popup_centered()
+	popup_centered_clamped()
 	ExtensionsApi.dialog.dialog_open(true)
 
 
@@ -207,4 +207,4 @@ func _on_GenerateButton_pressed() -> void:
 
 
 func _on_ExportButton_pressed() -> void:
-	file_dialog.popup_centered()
+	file_dialog.popup_centered_clamped()

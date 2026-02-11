@@ -115,7 +115,6 @@ func _commit_undo(cel: RefCounted) -> void:
 	var project: RefCounted = ExtensionsApi.project.current_project
 	var redo_data = _depth_array.duplicate(true)
 	var undo_data = _depth_undo_data.duplicate(true)
-	project.undos += 1
 	project.undo_redo.create_action("Change Depth")
 	project.undo_redo.add_do_method(cel.set_meta.bind("VoxelDepth", redo_data))
 	project.undo_redo.add_undo_method(cel.set_meta.bind("VoxelDepth", undo_data))
