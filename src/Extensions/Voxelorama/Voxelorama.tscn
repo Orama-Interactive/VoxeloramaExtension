@@ -1,15 +1,15 @@
-[gd_scene load_steps=3 format=3 uid="uid://d0uixtmp37u3h"]
+[gd_scene format=3 uid="uid://d0uixtmp37u3h"]
 
 [ext_resource type="Script" uid="uid://bushs4ilvvrmj" path="res://src/Extensions/Voxelorama/Voxelorama.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://dd7sl2gqjeyo0" path="res://src/Extensions/Voxelorama/VoxeloramaPreview.tscn" id="2"]
 
-[node name="Voxelorama" type="AcceptDialog"]
+[node name="Voxelorama" type="AcceptDialog" unique_id=1347823116]
 position = Vector2i(0, 36)
 size = Vector2i(700, 500)
 exclusive = false
 script = ExtResource("1")
 
-[node name="VBoxContainer" type="HBoxContainer" parent="."]
+[node name="VBoxContainer" type="HBoxContainer" parent="." unique_id=2084960086]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -18,64 +18,64 @@ offset_top = 8.0
 offset_right = -8.0
 offset_bottom = -49.0
 
-[node name="ViewportAndStatus" type="VBoxContainer" parent="VBoxContainer"]
+[node name="ViewportAndStatus" type="VBoxContainer" parent="VBoxContainer" unique_id=380571032]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="PreviewHeader" type="HBoxContainer" parent="VBoxContainer/ViewportAndStatus"]
+[node name="PreviewHeader" type="HBoxContainer" parent="VBoxContainer/ViewportAndStatus" unique_id=1438023192]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/ViewportAndStatus/PreviewHeader"]
+[node name="Label" type="Label" parent="VBoxContainer/ViewportAndStatus/PreviewHeader" unique_id=2023052425]
 layout_mode = 2
 theme_type_variation = &"Header"
 text = "Preview:"
 
-[node name="HSeparator" type="HSeparator" parent="VBoxContainer/ViewportAndStatus/PreviewHeader"]
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer/ViewportAndStatus/PreviewHeader" unique_id=1266293478]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Panel" type="Panel" parent="VBoxContainer/ViewportAndStatus"]
+[node name="Panel" type="Panel" parent="VBoxContainer/ViewportAndStatus" unique_id=19194628]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="SubViewportContainer" type="SubViewportContainer" parent="VBoxContainer/ViewportAndStatus/Panel"]
+[node name="SubViewportContainer" type="SubViewportContainer" parent="VBoxContainer/ViewportAndStatus/Panel" unique_id=1768192968]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 stretch = true
 
-[node name="SubViewport" type="SubViewport" parent="VBoxContainer/ViewportAndStatus/Panel/SubViewportContainer"]
+[node name="SubViewport" type="SubViewport" parent="VBoxContainer/ViewportAndStatus/Panel/SubViewportContainer" unique_id=1136337454]
 transparent_bg = true
 handle_input_locally = false
 size = Vector2i(2, 2)
 render_target_update_mode = 0
 
-[node name="VoxeloramaPreview" parent="VBoxContainer/ViewportAndStatus/Panel/SubViewportContainer/SubViewport" instance=ExtResource("2")]
+[node name="VoxeloramaPreview" parent="VBoxContainer/ViewportAndStatus/Panel/SubViewportContainer/SubViewport" unique_id=95278696 instance=ExtResource("2")]
 
-[node name="ShadedPreview" type="CheckBox" parent="VBoxContainer/ViewportAndStatus"]
+[node name="ShadedPreview" type="CheckBox" parent="VBoxContainer/ViewportAndStatus" unique_id=872563314]
 layout_mode = 2
 size_flags_horizontal = 8
 mouse_default_cursor_shape = 2
 button_pressed = true
 text = "Shaded Preview"
 
-[node name="StatusHeader" type="HBoxContainer" parent="VBoxContainer/ViewportAndStatus"]
+[node name="StatusHeader" type="HBoxContainer" parent="VBoxContainer/ViewportAndStatus" unique_id=875012186]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/ViewportAndStatus/StatusHeader"]
+[node name="Label" type="Label" parent="VBoxContainer/ViewportAndStatus/StatusHeader" unique_id=1120498079]
 layout_mode = 2
 theme_type_variation = &"Header"
 text = "Status:"
 
-[node name="HSeparator" type="HSeparator" parent="VBoxContainer/ViewportAndStatus/StatusHeader"]
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer/ViewportAndStatus/StatusHeader" unique_id=1179275120]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="StatusPanel" type="Panel" parent="VBoxContainer/ViewportAndStatus"]
+[node name="StatusPanel" type="Panel" parent="VBoxContainer/ViewportAndStatus" unique_id=1529985335]
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 
-[node name="Status" type="RichTextLabel" parent="VBoxContainer/ViewportAndStatus/StatusPanel"]
+[node name="Status" type="RichTextLabel" parent="VBoxContainer/ViewportAndStatus/StatusPanel" unique_id=657970419]
 unique_name_in_owner = true
 layout_mode = 0
 anchor_right = 1.0
@@ -87,90 +87,90 @@ offset_bottom = -3.0
 focus_mode = 2
 selection_enabled = true
 
-[node name="VSeparator" type="VSeparator" parent="VBoxContainer"]
+[node name="VSeparator" type="VSeparator" parent="VBoxContainer" unique_id=1258054921]
 layout_mode = 2
 
-[node name="Options" type="VBoxContainer" parent="VBoxContainer"]
+[node name="Options" type="VBoxContainer" parent="VBoxContainer" unique_id=1085800020]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
-[node name="OptionsHeader" type="HBoxContainer" parent="VBoxContainer/Options"]
+[node name="OptionsHeader" type="HBoxContainer" parent="VBoxContainer/Options" unique_id=415146311]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/Options/OptionsHeader"]
+[node name="Label" type="Label" parent="VBoxContainer/Options/OptionsHeader" unique_id=1385315764]
 layout_mode = 2
 theme_type_variation = &"Header"
 text = "Options:"
 
-[node name="HSeparator" type="HSeparator" parent="VBoxContainer/Options/OptionsHeader"]
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer/Options/OptionsHeader" unique_id=1422868630]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ScaleHBox" type="HBoxContainer" parent="VBoxContainer/Options"]
+[node name="ScaleHBox" type="HBoxContainer" parent="VBoxContainer/Options" unique_id=1521557956]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/Options/ScaleHBox"]
+[node name="Label" type="Label" parent="VBoxContainer/Options/ScaleHBox" unique_id=163399248]
 layout_mode = 2
 text = "Scale:"
 
-[node name="FlagsHeader" type="HBoxContainer" parent="VBoxContainer/Options"]
+[node name="FlagsHeader" type="HBoxContainer" parent="VBoxContainer/Options" unique_id=442121641]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer/Options/FlagsHeader"]
+[node name="Label" type="Label" parent="VBoxContainer/Options/FlagsHeader" unique_id=924049465]
 layout_mode = 2
 theme_type_variation = &"Header"
 text = "Flags:"
 
-[node name="HSeparator" type="HSeparator" parent="VBoxContainer/Options/FlagsHeader"]
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer/Options/FlagsHeader" unique_id=1095874483]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Flags" type="ScrollContainer" parent="VBoxContainer/Options"]
+[node name="Flags" type="ScrollContainer" parent="VBoxContainer/Options" unique_id=527642348]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/Options/Flags"]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/Options/Flags" unique_id=1041317298]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Centered" type="CheckBox" parent="VBoxContainer/Options/Flags/VBoxContainer"]
+[node name="Centered" type="CheckBox" parent="VBoxContainer/Options/Flags/VBoxContainer" unique_id=1675721462]
 layout_mode = 2
 size_flags_horizontal = 0
 mouse_default_cursor_shape = 2
 button_pressed = true
 text = "Centered"
 
-[node name="Symmetrical" type="CheckBox" parent="VBoxContainer/Options/Flags/VBoxContainer"]
+[node name="Symmetrical" type="CheckBox" parent="VBoxContainer/Options/Flags/VBoxContainer" unique_id=693233210]
 layout_mode = 2
 size_flags_horizontal = 0
 mouse_default_cursor_shape = 2
 text = "Symmetrical"
 
-[node name="MergeFrames" type="CheckBox" parent="VBoxContainer/Options/Flags/VBoxContainer"]
+[node name="MergeFrames" type="CheckBox" parent="VBoxContainer/Options/Flags/VBoxContainer" unique_id=730904955]
 layout_mode = 2
 size_flags_horizontal = 0
 mouse_default_cursor_shape = 2
 text = "Merge Frames"
 
-[node name="HSeparator2" type="HSeparator" parent="VBoxContainer/Options"]
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer/Options" unique_id=230461876]
 layout_mode = 2
 
-[node name="GenerateAndExport" type="VBoxContainer" parent="VBoxContainer/Options"]
+[node name="GenerateAndExport" type="VBoxContainer" parent="VBoxContainer/Options" unique_id=418854401]
 layout_mode = 2
 
-[node name="GenerateButton" type="Button" parent="VBoxContainer/Options/GenerateAndExport"]
+[node name="GenerateButton" type="Button" parent="VBoxContainer/Options/GenerateAndExport" unique_id=86240670]
 layout_mode = 2
 mouse_default_cursor_shape = 2
 text = "Generate"
 
-[node name="ExportButton" type="Button" parent="VBoxContainer/Options/GenerateAndExport"]
+[node name="ExportButton" type="Button" parent="VBoxContainer/Options/GenerateAndExport" unique_id=272790192]
 layout_mode = 2
 mouse_default_cursor_shape = 2
 text = "Export"
 
-[node name="FileDialog" type="FileDialog" parent="." groups=["FileDialogs"]]
+[node name="FileDialog" type="FileDialog" parent="." unique_id=1223968170 groups=["FileDialogs"]]
 size = Vector2i(677, 300)
 access = 2
 filters = PackedStringArray("*.obj")

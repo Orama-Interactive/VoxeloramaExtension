@@ -125,14 +125,14 @@ func generate() -> void:
 	var i := 0
 	for cel in project.frames[project.current_frame].cels:
 		if project.layers[i].visible:
-			var image: Image = cel.image
+			var image: Image = cel.get_image()
 			var depth_data: Array[PackedFloat32Array] = []
 			if merge_frames:
 				image = Image.new()
 				for j in project.frames.size():
 					var frame_image := Image.new()
 					var cel2: RefCounted = project.frames[j].cels[i]
-					frame_image.copy_from(cel2.image)
+					frame_image.copy_from(cel2.get_image())
 					if j == 0:
 						image = frame_image
 					else:
@@ -141,7 +141,7 @@ func generate() -> void:
 						)
 					if cel2.has_meta("VoxelDepth"):
 						depth_data = Array(
-							cel.get_meta("VoxelDepth"), TYPE_PACKED_FLOAT32_ARRAY, "", null
+							cel2.get_meta("VoxelDepth"), TYPE_PACKED_FLOAT32_ARRAY, "", null
 						)
 			else:
 				if cel.has_meta("VoxelDepth"):

@@ -3,8 +3,8 @@
 	"display_name": "Voxelorama",
 	"description": "Convert your pixel art into voxel art, by Orama Interactive.",
 	"author": "Orama Interactive",
-	"supported_api_versions": [ 8 ],
-	"version": "1.2",
+	"supported_api_versions": [ 8, 9, 10 ],
+	"version": "1.3",
 	"license": "MIT",
 	"nodes": [
 		"Voxelorama.tscn"

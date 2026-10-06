@@ -10,20 +10,22 @@ func _ready() -> void:
 
 
 func _draw() -> void:
-	var project = ExtensionsApi.project.current_project
-	var size: Vector2i = project.size
+	var project: RefCounted = ExtensionsApi.project.current_project
 	var cel: RefCounted = project.frames[project.current_frame].cels[project.current_layer]
-	var image: Image = cel.image
+	var image: Image = cel.get_image()
+	var size: Vector2i = image.get_size()
 	if !cel.has_meta("VoxelDepth"):
 		return
 	var depth_array: Array[PackedFloat32Array] = Array(
 		cel.get_meta("VoxelDepth"), TYPE_PACKED_FLOAT32_ARRAY, "", null
 	)
-
+	var offset := Vector2.ZERO
+	if ExtensionsApi.get_api_version() >= 10:
+		offset = cel.offset
 	var font: Font = ExtensionsApi.theme.get_theme().default_font
-	draw_set_transform(position, rotation, Vector2(0.05, 0.05))
-	for x in range(size.x):
-		for y in range(size.y):
+	draw_set_transform(position + offset, rotation, Vector2(0.05, 0.05))
+	for x in range(depth_array.size()):
+		for y in range(depth_array[x].size()):
 			if image.get_pixel(x, y).a == 0:
 				continue
 			var depth_str := str(depth_array[x][y])

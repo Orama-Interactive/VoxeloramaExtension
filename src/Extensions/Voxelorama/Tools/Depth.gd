@@ -75,7 +75,7 @@ func draw_start(pos: Vector2) -> void:
 	_depth_array = []
 	var project: RefCounted = ExtensionsApi.project.current_project
 	var cel: RefCounted = project.frames[project.current_frame].cels[project.current_layer]
-	var image: Image = cel.image
+	var image: Image = cel.get_image()
 	if cel.has_meta("VoxelDepth"):
 		var image_depth_array: Array[PackedFloat32Array] = cel.get_meta("VoxelDepth")
 		var n_array_pixels: int = image_depth_array.size() * image_depth_array[0].size()
@@ -88,7 +88,10 @@ func draw_start(pos: Vector2) -> void:
 	else:
 		_initialize_array(image)
 	_depth_undo_data = (cel.get_meta("VoxelDepth", _depth_array)).duplicate(true)
-	_update_array(cel, pos)
+	var offset := Vector2.ZERO
+	if ExtensionsApi.get_api_version() >= 10:
+		offset = cel.offset
+	_update_array(cel, pos - offset)
 	_last_position = pos
 
 
@@ -99,7 +102,10 @@ func draw_move(pos: Vector2) -> void:
 		draw_start(pos)
 	var project: RefCounted = ExtensionsApi.project.current_project
 	var cel: RefCounted = project.frames[project.current_frame].cels[project.current_layer]
-	fill_gap(cel, _last_position, pos)
+	var offset := Vector2i.ZERO
+	if ExtensionsApi.get_api_version() >= 10:
+		offset = cel.offset
+	fill_gap(cel, _last_position - offset, Vector2i(pos) - offset)
 	_last_position = pos
 
 
@@ -107,7 +113,10 @@ func draw_end(pos: Vector2) -> void:
 	is_moving = false
 	var project: RefCounted = ExtensionsApi.project.current_project
 	var cel: RefCounted = project.frames[project.current_frame].cels[project.current_layer]
-	_update_array(cel, pos)
+	var offset := Vector2.ZERO
+	if ExtensionsApi.get_api_version() >= 10:
+		offset = cel.offset
+	_update_array(cel, pos - offset)
 	_commit_undo(cel)
 
 
@@ -174,6 +183,10 @@ func _initialize_array(image: Image) -> void:
 
 
 func _update_array(cel: RefCounted, position: Vector2) -> void:
+	if position.x >= _depth_array.size():
+		return
+	if position.y >= _depth_array[position.x].size():
+		return
 	_depth_array[position.x][position.y] = _depth
 	cel.set_meta("VoxelDepth", _depth_array)
 	_canvas_depth_node.queue_redraw()
